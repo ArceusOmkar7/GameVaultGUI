@@ -28,29 +28,59 @@ The project consists of a core backend logic layer, a Command-Line Interface (CL
 
 ## Project Structure
 .
-├── .gitignore # Files to ignore in Git
-├── build.xml # Ant build script (imports nbproject/build-impl.xml)
-├── nbproject # NetBeans project configuration
-│ ├── build-impl.xml # Auto-generated Ant script
-│ ├── genfiles.properties
-│ ├── project.properties # Project specific properties (classpath, main class, etc.)
-│ └── project.xml
-└── src # Source code directory
-└── com
-└── project
-├── gamevaultcli # Core logic, CLI interface, entities, storage, exceptions, helpers
-│ ├── ... (entities, exceptions, helpers, interfaces, management, storage packages)
-│ └── GameVaultCLI.java
-└── gamevaultgui # GUI components
-├── BillingPanel.java
-├── CartPanel.java
-├── DashboardPanel.java
-├── GameVaultFrame.java # Main GUI window
-├── ManageGamesPanel.java # Admin placeholder
-├── ManageUsersPanel.java # Admin placeholder
-├── NavbarPanel.java
-├── SidebarPanel.java
-└── UserPanel.java
+├── .gitignore
+├── build.xml
+├── nbproject
+│   ├── build-impl.xml
+│   ├── genfiles.properties
+│   ├── project.properties
+│   └── project.xml
+└── src
+    └── com
+        └── project
+            ├── gamevaultcli
+            │   ├── GameVaultCLI.java
+            │   ├── entities
+            │   │   ├── Cart.java
+            │   │   ├── Game.java
+            │   │   ├── Order.java
+            │   │   ├── Transaction.java
+            │   │   └── User.java
+            │   ├── exceptions
+            │   │   ├── CartEmptyException.java
+            │   │   ├── GameNotFoundException.java
+            │   │   ├── InvalidUserDataException.java
+            │   │   ├── OrderNotFoundException.java
+            │   │   └── UserNotFoundException.java
+            │   ├── helpers
+            │   │   ├── DBUtil.java
+            │   │   └── Helper.java
+            │   ├── interfaces
+            │   │   └── StorageInterface.java
+            │   ├── management
+            │   │   ├── CartManagement.java
+            │   │   ├── GameManagement.java
+            │   │   ├── GameVaultManagement.java
+            │   │   ├── GameVaultMenu.java
+            │   │   ├── OrderManagement.java
+            │   │   ├── TransactionManagement.java
+            │   │   └── UserManagement.java
+            │   └── storage
+            │       ├── CartStorage.java
+            │       ├── GameStorage.java
+            │       ├── OrderStorage.java
+            │       ├── TransactionStorage.java
+            │       └── UserStorage.java
+            └── gamevaultgui
+                ├── BillingPanel.java
+                ├── CartPanel.java
+                ├── DashboardPanel.java
+                ├── GameVaultFrame.java
+                ├── ManageGamesPanel.java   <-- New Admin Panel
+                ├── ManageUsersPanel.java   <-- New Admin Panel
+                ├── NavbarPanel.java
+                ├── SidebarPanel.java
+                └── UserPanel.java
 
 ## Setup and Installation
 
