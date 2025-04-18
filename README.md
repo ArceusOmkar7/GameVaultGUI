@@ -29,35 +29,35 @@ The project consists of a core backend logic layer, a Command-Line Interface (CL
 ## Project Structure
 .
 ├── .gitignore
-├── build.xml
-├── nbproject
+├── build.xml                     # Apache Ant build file
+├── nbproject/                   # NetBeans-specific project config files
 │   ├── build-impl.xml
 │   ├── genfiles.properties
 │   ├── project.properties
 │   └── project.xml
-└── src
-    └── com
-        └── project
-            ├── gamevaultcli
+└── src/
+    └── com/
+        └── project/
+            ├── gamevaultcli/    # CLI version of the app
             │   ├── GameVaultCLI.java
-            │   ├── entities
+            │   ├── entities/    # Core data models
             │   │   ├── Cart.java
             │   │   ├── Game.java
             │   │   ├── Order.java
             │   │   ├── Transaction.java
             │   │   └── User.java
-            │   ├── exceptions
+            │   ├── exceptions/  # Custom exception classes
             │   │   ├── CartEmptyException.java
             │   │   ├── GameNotFoundException.java
             │   │   ├── InvalidUserDataException.java
             │   │   ├── OrderNotFoundException.java
             │   │   └── UserNotFoundException.java
-            │   ├── helpers
+            │   ├── helpers/     # Utility/helper classes
             │   │   ├── DBUtil.java
             │   │   └── Helper.java
-            │   ├── interfaces
+            │   ├── interfaces/  # Interface definitions
             │   │   └── StorageInterface.java
-            │   ├── management
+            │   ├── management/  # Business logic layer
             │   │   ├── CartManagement.java
             │   │   ├── GameManagement.java
             │   │   ├── GameVaultManagement.java
@@ -65,19 +65,19 @@ The project consists of a core backend logic layer, a Command-Line Interface (CL
             │   │   ├── OrderManagement.java
             │   │   ├── TransactionManagement.java
             │   │   └── UserManagement.java
-            │   └── storage
+            │   └── storage/     # Data access layer
             │       ├── CartStorage.java
             │       ├── GameStorage.java
             │       ├── OrderStorage.java
             │       ├── TransactionStorage.java
             │       └── UserStorage.java
-            └── gamevaultgui
+            └── gamevaultgui/    # GUI version of the app
                 ├── BillingPanel.java
                 ├── CartPanel.java
                 ├── DashboardPanel.java
                 ├── GameVaultFrame.java
-                ├── ManageGamesPanel.java   <-- New Admin Panel
-                ├── ManageUsersPanel.java   <-- New Admin Panel
+                ├── ManageGamesPanel.java     # Admin functionality
+                ├── ManageUsersPanel.java     # Admin functionality
                 ├── NavbarPanel.java
                 ├── SidebarPanel.java
                 └── UserPanel.java
