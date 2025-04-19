@@ -1,3 +1,4 @@
+
 package com.project.gamevaultgui;
 
 import javax.swing.*;
@@ -5,7 +6,7 @@ import java.awt.*;
 
 public class NavbarPanel extends JPanel {
 
-    private final GameVaultFrame parentFrame;
+    final GameVaultFrame parentFrame;
 
     private JLabel brandLabel;
     private JLabel pageTitleLabel;

@@ -1,3 +1,6 @@
+
+
+
 package com.project.gamevaultgui;
 
 import com.project.gamevaultcli.entities.Order;
@@ -6,89 +9,165 @@ import com.project.gamevaultcli.management.OrderManagement;
 import com.project.gamevaultcli.management.TransactionManagement;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.border.TitledBorder; // Import TitledBorder
 import java.awt.*;
 import java.util.List;
-import java.util.Vector;
+import java.util.Vector; // Necessary for DefaultTableModel constructor with column names as Vector
+import javax.swing.table.DefaultTableModel;
 
 public class BillingPanel extends JPanel {
 
     private final OrderManagement orderManagement;
     private final TransactionManagement transactionManagement;
-    private final GameVaultFrame parentFrame;
+    private final GameVaultFrame parentFrame; // Reference to the parent frame
 
     private JTable ordersTable;
     private DefaultTableModel ordersTableModel;
-    private JScrollPane ordersScrollPane; // Make scroll panes instance variables
+    private JScrollPane ordersScrollPane;
 
     private JTable transactionsTable;
     private DefaultTableModel transactionsTableModel;
-    private JScrollPane transactionsScrollPane; // Make scroll panes instance variables
+    private JScrollPane transactionsScrollPane;
 
     public BillingPanel(OrderManagement orderManagement, TransactionManagement transactionManagement, GameVaultFrame parentFrame) {
         this.orderManagement = orderManagement;
         this.transactionManagement = transactionManagement;
-        this.parentFrame = parentFrame;
+        this.parentFrame = parentFrame; // Initialize parent frame reference
 
-        setLayout(new GridLayout(2, 1, 10, 10)); // Two rows, 1 column, with vertical spacing
-        setBorder(BorderFactory.createTitledBorder("Billing History"));
+        setLayout(new GridLayout(2, 1, 10, 10)); // 2 rows, 1 column, with spacing
+        // Change the main panel's title border text
+        setBorder(BorderFactory.createTitledBorder(
+            BorderFactory.createLineBorder(new Color(60, 63, 65), 2),
+            "Your Orders History", // Changed title text
+            TitledBorder.LEADING, // Align title to the left
+            TitledBorder.TOP,    // Place title at the top
+            new Font("SansSerif", Font.BOLD, 18), // Title font
+            new Color(60, 63, 65) // Title color
+        ));
+         setBackground(new Color(240, 240, 240)); // Set a light gray background
+
 
         initComponents();
         addComponents();
     }
 
     private void initComponents() {
-        // Orders Table
+        // --- Orders Table components ---
+        // Columns for the orders table
         ordersTableModel = new DefaultTableModel(new Object[]{"Order ID", "Total Amount", "Order Date"}, 0);
         ordersTable = new JTable(ordersTableModel);
-        ordersScrollPane = new JScrollPane(ordersTable); // Create scroll pane with the table
-        ordersScrollPane.setBorder(BorderFactory.createTitledBorder("Past Orders"));
+        ordersScrollPane = new JScrollPane(ordersTable);
+         // Add a titled border specifically for the orders scroll pane
+         ordersScrollPane.setBorder(BorderFactory.createTitledBorder(
+                 BorderFactory.createLineBorder(new Color(180, 180, 180), 1), // Light gray border
+                "Past Orders", // Sub-title for this table
+                TitledBorder.LEADING,
+                TitledBorder.TOP,
+                new Font("SansSerif", Font.BOLD, 14), // Sub-title font
+                new Color(50, 50, 50) // Sub-title color
+         ));
+         customizeTable(ordersTable); // Customize table appearance
 
-        // Transactions Table
+
+        // --- Transactions Table components ---
+        // Columns for the transactions table
         transactionsTableModel = new DefaultTableModel(new Object[]{"Transaction ID", "Order ID", "Type", "Amount", "Date"}, 0);
         transactionsTable = new JTable(transactionsTableModel);
-        transactionsScrollPane = new JScrollPane(transactionsTable); // Create scroll pane with the table
-        transactionsScrollPane.setBorder(BorderFactory.createTitledBorder("Transaction History"));
+        transactionsScrollPane = new JScrollPane(transactionsTable);
+         // Add a titled border specifically for the transactions scroll pane
+         transactionsScrollPane.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(180, 180, 180), 1), // Light gray border
+                "Transaction History", // Sub-title for this table
+                TitledBorder.LEADING,
+                TitledBorder.TOP,
+                new Font("SansSerif", Font.BOLD, 14),
+                new Color(50, 50, 50)
+         ));
+         customizeTable(transactionsTable); // Customize table appearance
     }
+
+    /**
+     * Applies common styling to a JTable.
+     * @param table The table to style.
+     */
+    private void customizeTable(JTable table) {
+         table.setFont(new Font("SansSerif", Font.PLAIN, 13)); // Data row font
+         table.setRowHeight(20); // Adjust row height
+         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13)); // Header font
+         table.setFillsViewportHeight(true); // Make the table fill the scroll pane vertically
+         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); // Allow only one row selection
+         // Optional: Set grid color, background, etc.
+         table.setGridColor(new Color(200, 200, 200)); // Lighter grid lines
+         table.setBackground(Color.WHITE); // White background for table data
+         table.getTableHeader().setBackground(new Color(220, 220, 220)); // Light gray header background
+     }
+
 
     private void addComponents() {
-        add(ordersScrollPane); // Add the scroll pane to the GridLayout
-        add(transactionsScrollPane); // Add the scroll pane to the GridLayout
+        // Add the scroll panes containing the tables to the panel
+        add(ordersScrollPane);
+        add(transactionsScrollPane);
     }
 
+    /**
+     * Loads and displays the orders and transactions for the given user ID.
+     * @param userId The ID of the user whose history to load.
+     */
     public void loadBills(int userId) {
-        ordersTableModel.setRowCount(0); // Clear previous data
-        transactionsTableModel.setRowCount(0); // Clear previous data
+        ordersTableModel.setRowCount(0); // Clear previous data from the orders table
+        transactionsTableModel.setRowCount(0); // Clear previous data from the transactions table
 
         try {
             // Load past orders for the current user
             List<Order> allOrders = orderManagement.getAllOrders();
-            for (Order order : allOrders) {
-                if (order.getUserId() == userId) {
-                    ordersTableModel.addRow(new Object[]{
-                            order.getOrderId(),
-                            String.format("%.2f", order.getTotalAmount()),
-                            order.getOrderDate()
-                    });
+            if (allOrders != null) { // Check if the list is not null
+                for (Order order : allOrders) {
+                    if (order.getUserId() == userId) {
+                        ordersTableModel.addRow(new Object[]{
+                                order.getOrderId(),
+                                String.format("%.2f", order.getTotalAmount()), // Format total amount to 2 decimal places
+                                order.getOrderDate() // Display the order date
+                        });
+                    }
                 }
             }
+
 
             // Load transactions for the current user
             List<Transaction> allTransactions = transactionManagement.getAllTransactions();
-            for (Transaction transaction : allTransactions) {
-                if (transaction.getUserId() == userId) {
-                    transactionsTableModel.addRow(new Object[]{
-                            transaction.getTransactionId(),
-                            transaction.getOrderId(),
-                            transaction.getTransactionType(),
-                            String.format("%.2f", transaction.getAmount()),
-                            transaction.getTransactionDate()
-                    });
+             if (allTransactions != null) { // Check if the list is not null
+                for (Transaction transaction : allTransactions) {
+                    if (transaction.getUserId() == userId) {
+                        transactionsTableModel.addRow(new Object[]{
+                                transaction.getTransactionId(),
+                                transaction.getOrderId(),
+                                // transaction.getUserId(), // User ID column is typically hidden in user's own view
+                                transaction.getTransactionType(),
+                                String.format("%.2f", transaction.getAmount()), // Format amount
+                                transaction.getTransactionDate() // Display the transaction date (LocalDateTime or Date)
+                        });
+                    }
                 }
-            }
+             }
+
+
+             // Ensure column identifiers are correctly set in case they were changed or cleared
+             // This line is optional if column names are always the same, but can help ensure consistency
+             ordersTableModel.setColumnIdentifiers(new Vector<>(java.util.Arrays.asList("Order ID", "Total Amount", "Order Date")));
+             transactionsTableModel.setColumnIdentifiers(new Vector<>(java.util.Arrays.asList("Transaction ID", "Order ID", "Type", "Amount", "Date")));
+
+
+            // After loading data, ensure the tables are updated in the UI
+             ordersTable.revalidate();
+             ordersTable.repaint();
+             transactionsTable.revalidate();
+             transactionsTable.repaint();
+
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading billing data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            // Display an error message to the user if data loading fails
+            JOptionPane.showMessageDialog(this, "Error loading order and transaction history: " + e.getMessage(), "Loading Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); // Print stack trace for debugging purposes
         }
     }
 }

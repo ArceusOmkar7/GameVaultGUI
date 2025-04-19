@@ -1,3 +1,4 @@
+
 package com.project.gamevaultgui;
 
 import com.project.gamevaultcli.entities.Game;
