@@ -39,8 +39,8 @@ public class GameVaultFrame extends JFrame {
     private LoginPanel loginPanel;
     private SignupPanel signupPanel;
 
-    private ManageGamesPanel manageGamesPanel;
-    private ManageUsersPanel manageUsersPanel;
+    private ManageGamesPanel manageGamesPanel; // Now requires GameManagement
+    private ManageUsersPanel manageUsersPanel; // Now requires UserManagement
 
     // Management classes
     private final GameVaultManagement gameVaultManagement;
@@ -106,9 +106,9 @@ public class GameVaultFrame extends JFrame {
         loginPanel = new LoginPanel(this);
         signupPanel = new SignupPanel(this);
 
-        // Initialize Admin panels
-        manageGamesPanel = new ManageGamesPanel();
-        manageUsersPanel = new ManageUsersPanel();
+        // Initialize Admin panels, PASSING MANAGEMENT INSTANCES
+        manageGamesPanel = new ManageGamesPanel(gameManagement); // Pass GameManagement
+        manageUsersPanel = new ManageUsersPanel(userManagement); // Pass UserManagement
     }
 
     private void addComponentsToFrame() {
@@ -154,8 +154,11 @@ public class GameVaultFrame extends JFrame {
             loginPanel.resetLoginForm();
         } else if ("Signup".equals(panelName)) {
             signupPanel.resetSignupForm();
+        } else if ("Manage Games".equals(panelName)) { // Load data when Manage Games is shown
+             manageGamesPanel.loadGames();
+        } else if ("Manage Users".equals(panelName)) { // Load data when Manage Users is shown
+             manageUsersPanel.loadUsers();
         }
-         // No specific load logic for basic admin panels in this implementation yet
 
         // Update Navbar and Sidebar visibility/state after showing the panel
         // PASS THE INTENDED PANEL NAME (the CardLayout key)
@@ -303,8 +306,7 @@ public class GameVaultFrame extends JFrame {
                 currentUser.getCreatedAt()
             );
 
-            // This method calls userManagement.updateUser(), which throws InvalidUserDataException and UserNotFoundException
-            userManagement.updateUser(updatedUser);
+            userManagement.updateUser(updatedUser); // Call the management layer to update DB
             this.currentUser = updatedUser; // Update the frame's current user object
 
             JOptionPane.showMessageDialog(this, "Username updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -312,19 +314,14 @@ public class GameVaultFrame extends JFrame {
             // Reload user info panel to show the change
             userPanel.loadUserInfo(this.currentUser);
             // Update navbar greeting if needed
-            // Pass the current panel name so the UI state is updated correctly
-            // We can get this by asking the card layout, but passing the *intended* name is safer.
-            // Let's assume the user panel is visible after update
             updateUIState("User Profile"); // Explicitly update UI for User Profile panel
 
         } catch (UserNotFoundException e) {
-             // This case shouldn't happen if currentUser is valid and DB is stable, but caught for safety
              JOptionPane.showMessageDialog(this, "User not found during update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
         catch (Exception e) {
-            // Catch any other unexpected exceptions (like SQLException from storage)
             JOptionPane.showMessageDialog(this, "An error occurred while updating username: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace(); // Print stack trace for debugging
+            e.printStackTrace();
         }
     }
 
