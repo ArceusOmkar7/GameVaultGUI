@@ -147,7 +147,11 @@ public class DashboardPanel extends JPanel {
              @Override public void mouseEntered(MouseEvent e) { addToCartButton.setBackground(btnHover); }
              @Override public void mouseExited(MouseEvent e) { addToCartButton.setBackground(btnBg); }
              @Override public void mousePressed(MouseEvent evt) { addToCartButton.setBackground(btnHover.darker()); }
-             @Override public void mouseReleased(MouseEvent evt) { addToCartButton.setBackground(addToCartButton.getModel().isRollover() ? btnHover : btnBg); }
+             @Override
+             public void mouseReleased(MouseEvent evt) {
+                 // CORRECTED: Use addToCartButton.getModel()
+                 addToCartButton.setBackground(addToCartButton.getModel().isRollover() ? btnHover : btnBg);
+             }
          });
     }
 
@@ -161,6 +165,7 @@ public class DashboardPanel extends JPanel {
          table.setGridColor(new Color(200, 200, 200));
          table.setBackground(Color.WHITE);
          table.getTableHeader().setBackground(new Color(220, 220, 220));
+         table.setAutoCreateRowSorter(true); // Enable sorting
      }
 
 
@@ -183,13 +188,10 @@ public class DashboardPanel extends JPanel {
 
 
         // Panel for orders and transactions tables
-        // Use BoxLayout or another layout to ensure they share space reasonably,
-        // maybe within a JSplitPane if you want resizable dividers.
-        // For simple layout, put them side-by-side in a GridLayout panel.
-        JPanel ordersTransactionsContainer = new JPanel(new GridLayout(1, 2, 10, 0)); // 1 row, 2 columns, 10px horizontal gap
-        ordersTransactionsContainer.setOpaque(false);
-        ordersTransactionsContainer.add(ordersScrollPane);
-        ordersTransactionsContainer.add(transactionsScrollPane);
+        JPanel ordersTransactionsPanel = new JPanel(new GridLayout(1, 2, 10, 0));
+        ordersTransactionsPanel.setOpaque(false);
+        ordersTransactionsPanel.add(ordersScrollPane);
+        ordersTransactionsPanel.add(transactionsScrollPane);
 
 
         // Main panel layout (BoxLayout vertically)
@@ -200,11 +202,10 @@ public class DashboardPanel extends JPanel {
 
 
         contentPanel.add(summaryPanel);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 12))); // Adjusted Space
-        contentPanel.add(gameListPanel); // Contains the game table and its button
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 18))); // Adjusted Space
-        contentPanel.add(ordersTransactionsContainer); // Add the container for orders/transactions
-
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 15)));
+        contentPanel.add(gameListPanel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        contentPanel.add(ordersTransactionsPanel);
 
         add(contentPanel, BorderLayout.CENTER);
     }
@@ -257,15 +258,14 @@ public class DashboardPanel extends JPanel {
             gameCountLabel.setText("Total Games: " + games.size());
             gamesTableModel.setRowCount(0);
              for (Game game : games) {
-                 // Format date for display in games table if you add it there later
-                 // String releaseDateStr = (game.getReleaseDate() != null) ? new SimpleDateFormat("yyyy-MM-dd").format(game.getReleaseDate()) : "N/A";
+                 String releaseDateStr = (game.getReleaseDate() != null) ? new SimpleDateFormat("yyyy-MM-dd").format(game.getReleaseDate()) : "N/A";
                  gamesTableModel.addRow(new Object[]{
                          game.getGameId(),
                          game.getTitle(),
                          game.getDeveloper(),
                          game.getPlatform(),
-                         String.format("%.2f", game.getPrice())
-                         // , releaseDateStr // Add release date if you modify the table model columns
+                         String.format("%.2f", game.getPrice()),
+                         releaseDateStr
                  });
              }
 
