@@ -4,9 +4,10 @@ import com.project.gamevaultcli.management.GameVaultManagement;
 import com.project.gamevaultcli.management.CartManagement;
 import com.project.gamevaultcli.management.GameManagement;
 import com.project.gamevaultcli.management.OrderManagement;
-import com.project.gamevaultcli.management.TransactionManagement;
-import com.project.gamevaultcli.management.UserManagement;
+import com.project.gamevaultcli.management.TransactionManagement; // Import TransactionManagement
+import com.project.gamevaultcli.management.UserManagement; // Import UserManagement
 import com.project.gamevaultcli.entities.User;
+import com.project.gamevaultcli.entities.Transaction; // Import Transaction entity
 import com.project.gamevaultcli.exceptions.InvalidUserDataException;
 import com.project.gamevaultcli.exceptions.UserNotFoundException;
 
@@ -16,6 +17,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.time.LocalDateTime; // Import LocalDateTime
 
 // Import DBUtil for closing connection
 import com.project.gamevaultcli.helpers.DBUtil;
@@ -34,13 +36,13 @@ public class GameVaultFrame extends JFrame {
     private DashboardPanel dashboardPanel;
     private CartPanel cartPanel;
     private BillingPanel billingPanel; // Stays "Billing" internally as the CardLayout key
-    private UserPanel userPanel;
+    private UserPanel userPanel; // Now requires management classes
     private JPanel roleSelectionPanel;
     private LoginPanel loginPanel;
     private SignupPanel signupPanel;
 
-    private ManageGamesPanel manageGamesPanel; // Now requires GameManagement
-    private ManageUsersPanel manageUsersPanel; // Now requires UserManagement
+    private ManageGamesPanel manageGamesPanel;
+    private ManageUsersPanel manageUsersPanel;
 
     // Management classes
     private final GameVaultManagement gameVaultManagement;
@@ -48,7 +50,8 @@ public class GameVaultFrame extends JFrame {
     private final GameManagement gameManagement;
     private final CartManagement cartManagement;
     private final OrderManagement orderManagement;
-    private final TransactionManagement transactionManagement;
+    private final TransactionManagement transactionManagement; // Final reference
+
 
     private User currentUser;
     private boolean isAdmin = false; // Flag to track if the current perspective is admin
@@ -66,7 +69,7 @@ public class GameVaultFrame extends JFrame {
         this.gameManagement = gameManagement;
         this.cartManagement = cartManagement;
         this.orderManagement = orderManagement;
-        this.transactionManagement = transactionManagement;
+        this.transactionManagement = transactionManagement; // Initialize
 
         setTitle("Game Vault");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -98,17 +101,18 @@ public class GameVaultFrame extends JFrame {
         cardLayout = new CardLayout();
         centerPanel.setLayout(cardLayout);
 
+        // Pass management classes and this frame to panels that need them
         dashboardPanel = new DashboardPanel(userManagement, gameManagement, orderManagement, transactionManagement, cartManagement, this);
         cartPanel = new CartPanel(cartManagement, gameManagement, this);
         billingPanel = new BillingPanel(orderManagement, transactionManagement, this);
-        userPanel = new UserPanel(this);
+        userPanel = new UserPanel(this, userManagement, transactionManagement); // Pass user and transaction management
         roleSelectionPanel = createRoleSelectionPanel();
         loginPanel = new LoginPanel(this);
         signupPanel = new SignupPanel(this);
 
         // Initialize Admin panels, PASSING MANAGEMENT INSTANCES
-        manageGamesPanel = new ManageGamesPanel(gameManagement); // Pass GameManagement
-        manageUsersPanel = new ManageUsersPanel(userManagement); // Pass UserManagement
+        manageGamesPanel = new ManageGamesPanel(gameManagement);
+        manageUsersPanel = new ManageUsersPanel(userManagement);
     }
 
     private void addComponentsToFrame() {
@@ -277,6 +281,61 @@ public class GameVaultFrame extends JFrame {
         }
     }
 
+     /**
+      * Handles adding balance to the current user's wallet.
+      * Called from UserPanel.
+      * @param amount The amount to add.
+      */
+    public void addBalanceToCurrentUser(float amount) {
+         if (currentUser == null) {
+             JOptionPane.showMessageDialog(this, "No user logged in to add balance.", "Error", JOptionPane.ERROR_MESSAGE);
+             return;
+         }
+         if (amount <= 0) {
+              JOptionPane.showMessageDialog(this, "Amount must be positive.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+              return;
+         }
+
+         try {
+             // Update the user's wallet balance via management layer
+             // Note: UserManagement.updateWalletBalance needs to be created
+             userManagement.updateWalletBalance(currentUser.getUserId(), amount);
+
+             // Update the currentUser object in the frame
+             // It's safer to re-fetch or explicitly update the object
+             currentUser.setWalletBalance(currentUser.getWalletBalance() + amount); // Update local object
+
+             // Record the transaction
+             Transaction topupTransaction = new Transaction(
+                 null, // transactionId (will be generated by DB)
+                 null, // orderId (null for top-up)
+                 currentUser.getUserId(),
+                 "Top-up", // Transaction type
+                 amount,
+                 LocalDateTime.now() // Current date/time
+             );
+             transactionManagement.addTransaction(topupTransaction);
+
+
+             JOptionPane.showMessageDialog(this, String.format("$%.2f added to your wallet!", amount), "Balance Updated", JOptionPane.INFORMATION_MESSAGE);
+
+             // Refresh the User Profile panel to show the new balance
+             userPanel.loadUserInfo(this.currentUser);
+             // Refresh the Dashboard if visible, as it shows total revenue (though top-ups aren't revenue,
+             // displaying wallet on dashboard summary might be desired later)
+             // For now, just refreshing UserPanel and potentially Navbar is enough.
+             updateUIState("User Profile"); // Refresh UI State to update Navbar greeting/title
+
+         } catch (UserNotFoundException e) {
+             JOptionPane.showMessageDialog(this, "User not found during balance update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+             e.printStackTrace();
+         }
+          catch (Exception e) {
+             JOptionPane.showMessageDialog(this, "An error occurred while adding balance: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+             e.printStackTrace();
+         }
+     }
+
 
     /**
      * Handles updating the current user's username.
@@ -316,6 +375,8 @@ public class GameVaultFrame extends JFrame {
             // Update navbar greeting if needed
             updateUIState("User Profile"); // Explicitly update UI for User Profile panel
 
+        } catch (InvalidUserDataException e) {
+             JOptionPane.showMessageDialog(this, "Update Failed: " + e.getMessage(), "Validation Error", JOptionPane.WARNING_MESSAGE);
         } catch (UserNotFoundException e) {
              JOptionPane.showMessageDialog(this, "User not found during update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -445,8 +506,6 @@ public class GameVaultFrame extends JFrame {
         // --- FORCE DATABASE CONNECTION AT THE VERY START ---
         try {
              System.out.println("Attempting to establish database connection...");
-             // This call will trigger the DBUtil to ask for credentials if needed
-             // and implicitly create the database and tables if they don't exist.
              DBUtil.getConnection();
              System.out.println("Database connection established successfully.");
 
@@ -454,13 +513,10 @@ public class GameVaultFrame extends JFrame {
              System.err.println("Failed to establish initial database connection.");
              e.printStackTrace();
              JOptionPane.showMessageDialog(null, "Failed to connect to the database.\nPlease check connection details and ensure MySQL is running.\nError: " + e.getMessage(), "Database Connection Error", JOptionPane.ERROR_MESSAGE);
-             // Exit the application if the initial DB connection fails
              System.exit(1);
         }
 
-
-        // Initialize management classes (similar to your CLI)
-        // These rely on the DB connection being established above
+        // Initialize management classes
         com.project.gamevaultcli.storage.UserStorage userStorage = new com.project.gamevaultcli.storage.UserStorage();
         com.project.gamevaultcli.storage.GameStorage gameStorage = new com.project.gamevaultcli.storage.GameStorage();
         com.project.gamevaultcli.storage.CartStorage cartStorage = new com.project.gamevaultcli.storage.CartStorage(gameStorage);
@@ -476,9 +532,7 @@ public class GameVaultFrame extends JFrame {
         GameVaultManagement vaultManager = new GameVaultManagement(userManagement, gameManagement, orderManagement, transactionManagement);
 
         // Initialize predefined data *after* connection and storage are ready.
-        // This should ideally only run on the very first launch if the tables were just created.
-        // A proper check (e.g., check if a default user exists) is needed for production.
-        // For simple testing, you can uncomment this for the *very first* time you run after DB setup.
+        // Consider adding a check here if you want this to run only once ever.
         // try {
         //     System.out.println("Initializing predefined data...");
         //     vaultManager.initializeData();
@@ -486,14 +540,11 @@ public class GameVaultFrame extends JFrame {
         // } catch (Exception e) {
         //     System.err.println("Error initializing predefined data: " + e.getMessage());
         //     e.printStackTrace();
-        //     // Continue running even if data init fails, but the app might be empty
         // }
 
 
         SwingUtilities.invokeLater(() -> {
-            // Pass all management classes, including CartManagement
             new GameVaultFrame(vaultManager, userManagement, gameManagement, cartManagement, orderManagement, transactionManagement).setVisible(true);
         });
-         // No finally block here to close connection, as it's handled by the WindowAdapter
     }
 }
