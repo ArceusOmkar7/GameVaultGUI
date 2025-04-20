@@ -51,8 +51,8 @@ public class DashboardPanel extends JPanel {
     private JTable recentTransactionsTable;
     private DefaultTableModel ordersTableModel;
     private DefaultTableModel transactionsTableModel;
-    private JScrollPane ordersScrollPane; // <-- Declared here
-    private JScrollPane transactionsScrollPane; // <-- Declared here
+    private JScrollPane ordersScrollPane;
+    private JScrollPane transactionsScrollPane;
 
 
     // Buttons
@@ -110,7 +110,7 @@ public class DashboardPanel extends JPanel {
         // --- Recent Orders Table ---
         ordersTableModel = new DefaultTableModel(new Object[]{"Order ID", "User ID", "Total Amount", "Order Date"}, 0);
         recentOrdersTable = new JTable(ordersTableModel);
-        ordersScrollPane = new JScrollPane(recentOrdersTable); // <-- Initialized here
+        ordersScrollPane = new JScrollPane(recentOrdersTable);
          ordersScrollPane.setBorder(BorderFactory.createTitledBorder(
                  BorderFactory.createLineBorder(new Color(180, 180, 180), 1),
                 "Recent Orders",
@@ -122,7 +122,7 @@ public class DashboardPanel extends JPanel {
         // --- Recent Transactions Table ---
         transactionsTableModel = new DefaultTableModel(new Object[]{"Transaction ID", "Order ID", "User ID", "Type", "Amount", "Date"}, 0);
         recentTransactionsTable = new JTable(transactionsTableModel);
-        transactionsScrollPane = new JScrollPane(recentTransactionsTable); // <-- Initialized here
+        transactionsScrollPane = new JScrollPane(recentTransactionsTable);
          transactionsScrollPane.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createLineBorder(new Color(180, 180, 180), 1),
                 "Recent Transactions",
@@ -183,10 +183,13 @@ public class DashboardPanel extends JPanel {
 
 
         // Panel for orders and transactions tables
-        JPanel ordersTransactionsPanel = new JPanel(new GridLayout(1, 2, 10, 0));
-        ordersTransactionsPanel.setOpaque(false);
-        ordersTransactionsPanel.add(ordersScrollPane); // <-- Used here
-        ordersTransactionsPanel.add(transactionsScrollPane); // <-- Used here
+        // Use BoxLayout or another layout to ensure they share space reasonably,
+        // maybe within a JSplitPane if you want resizable dividers.
+        // For simple layout, put them side-by-side in a GridLayout panel.
+        JPanel ordersTransactionsContainer = new JPanel(new GridLayout(1, 2, 10, 0)); // 1 row, 2 columns, 10px horizontal gap
+        ordersTransactionsContainer.setOpaque(false);
+        ordersTransactionsContainer.add(ordersScrollPane);
+        ordersTransactionsContainer.add(transactionsScrollPane);
 
 
         // Main panel layout (BoxLayout vertically)
@@ -197,10 +200,11 @@ public class DashboardPanel extends JPanel {
 
 
         contentPanel.add(summaryPanel);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 12)));
-        contentPanel.add(gameListPanel);
-        contentPanel.add(Box.createRigidArea(new Dimension(0, 18)));
-        contentPanel.add(ordersTransactionsPanel);
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 12))); // Adjusted Space
+        contentPanel.add(gameListPanel); // Contains the game table and its button
+        contentPanel.add(Box.createRigidArea(new Dimension(0, 18))); // Adjusted Space
+        contentPanel.add(ordersTransactionsContainer); // Add the container for orders/transactions
+
 
         add(contentPanel, BorderLayout.CENTER);
     }
