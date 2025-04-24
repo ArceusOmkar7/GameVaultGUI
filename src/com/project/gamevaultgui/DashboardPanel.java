@@ -201,8 +201,11 @@ public class DashboardPanel extends JPanel {
         // Panel for summary labels
         JPanel summaryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         summaryPanel.setOpaque(false);
-        summaryPanel.add(userCountLabel);
+        // Add game count label always visible for both users and admin
         summaryPanel.add(gameCountLabel);
+        // Add user count and revenue labels - will control visibility in
+        // loadDashboardData
+        summaryPanel.add(userCountLabel);
         summaryPanel.add(totalRevenueLabel);
 
         // Panel for the game list table and the "Add to Cart" button
@@ -345,6 +348,10 @@ public class DashboardPanel extends JPanel {
             // Decide which orders/transactions to show based on isAdmin status (derived
             // from currentUserId check)
             if (currentUserId != -1) { // User view: Show only user's orders and transactions
+                // Hide user count and revenue labels for regular users
+                userCountLabel.setVisible(false);
+                totalRevenueLabel.setVisible(false);
+
                 List<Order> allOrders = orderManagement.getAllOrders();
                 if (allOrders != null) {
                     for (Order order : allOrders) {
@@ -383,6 +390,10 @@ public class DashboardPanel extends JPanel {
                 addToCartButton.setVisible(true);
 
             } else { // Admin view: Show all orders and transactions
+                // Show user count and revenue labels for admin
+                userCountLabel.setVisible(true);
+                totalRevenueLabel.setVisible(true);
+
                 List<Order> allOrders = orderManagement.getAllOrders();
                 if (allOrders != null) {
                     for (Order order : allOrders) {
