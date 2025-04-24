@@ -27,7 +27,8 @@ public class OrderManagement {
     private final UserStorage userStorage;
     private final TransactionManagement transactionManagement; // Added
 
-    public OrderManagement(OrderStorage orderStorage, CartStorage cartStorage, UserStorage userStorage, TransactionManagement transactionManagement) {
+    public OrderManagement(OrderStorage orderStorage, CartStorage cartStorage, UserStorage userStorage,
+            TransactionManagement transactionManagement) {
         this.orderStorage = orderStorage;
         this.cartStorage = cartStorage;
         this.userStorage = userStorage;
@@ -46,7 +47,8 @@ public class OrderManagement {
         return orderStorage.findAll();
     }
 
-//     Places an order for a user, creating a transaction, clearing the cart, and updating the user's wallet balance. 
+    // Places an order for a user, creating a transaction, clearing the cart, and
+    // updating the user's wallet balance.
     public void placeOrder(int userId) throws CartEmptyException {
         Cart cart = cartStorage.findById(userId);
         if (cart == null) {
@@ -86,7 +88,8 @@ public class OrderManagement {
             order = orders.get(orders.size() - 1);
 
             // 3. Create a transaction for the order
-            Transaction transaction = new Transaction(null, order.getOrderId(), userId, "Purchase", (float) totalAmount, LocalDateTime.now());
+            Transaction transaction = new Transaction(null, order.getOrderId(), userId, "Purchase", (float) totalAmount,
+                    LocalDateTime.now());
             transactionManagement.addTransaction(transaction);
 
             // 4. Clear the cart after placing the order

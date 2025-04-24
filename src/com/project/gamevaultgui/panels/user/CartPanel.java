@@ -139,9 +139,12 @@ public class CartPanel extends JPanel {
     public void loadCart(int userId) {
         tableModel.setRowCount(0); // Clear previous data
         double total = 0.0;
+        boolean hasItems = false;
+
         try {
             List<Game> gamesInCart = cartManagement.getGamesInCart(userId);
-            if (gamesInCart != null) { // Check if list is not null
+            if (gamesInCart != null && !gamesInCart.isEmpty()) { // Check if list is not null and not empty
+                hasItems = true;
                 for (Game game : gamesInCart) {
                     tableModel.addRow(
                             new Object[] { game.getGameId(), game.getTitle(), String.format("%.2f", game.getPrice()) });
@@ -160,10 +163,8 @@ public class CartPanel extends JPanel {
             e.printStackTrace();
         } finally {
             totalLabel.setText(String.format("Total: $%.2f", total));
-            // Enable/disable checkout based on cart emptiness and user balance (more
-            // complex check)
-            // For simplicity, enable if total > 0
-            checkoutButton.setEnabled(total > 0);
+            // Enable checkout if there are items in cart, regardless of total price
+            checkoutButton.setEnabled(hasItems);
         }
     }
 
