@@ -48,7 +48,7 @@ public class LoginPanel extends JPanel {
 
         // Update default login credentials label to show the correct credentials
         credentialsLabel = new JLabel(
-                "<html><b>Default Login:</b> Email: sasuke@gmail.com | Password: is this my password?</html>");
+                "<html><b>Default Login:</b> Email: user@user.com | Password: 1234</html>");
         credentialsLabel.setForeground(new Color(70, 130, 180)); // Steel blue color
         credentialsLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
         credentialsLabel.setHorizontalAlignment(SwingConstants.CENTER);

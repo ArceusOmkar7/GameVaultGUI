@@ -16,6 +16,7 @@ public class NavbarPanel extends JPanel {
     private JLabel pageTitleLabel;
     private JLabel greetingLabel;
     private JLabel profileIconLabel; // Placeholder for profile icon
+    private JButton logoutButton; // Added logout button
 
     public NavbarPanel(String initialGreeting, GameVaultFrame parentFrame) {
         this.parentFrame = parentFrame;
@@ -58,6 +59,31 @@ public class NavbarPanel extends JPanel {
         profileIconLabel.setForeground(new Color(60, 63, 65));
         profileIconLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         profileIconLabel.setVisible(false);
+
+        // Initialize the logout button
+        logoutButton = new JButton("Logout");
+        logoutButton.setFont(new Font("SansSerif", Font.BOLD, 12));
+        logoutButton.setBackground(new Color(220, 53, 69)); // Red color
+        logoutButton.setForeground(Color.WHITE);
+        logoutButton.setFocusPainted(false);
+        logoutButton.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+        logoutButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        logoutButton.setVisible(false); // Initially hidden, like the profile icon
+
+        // Add hover effect to logout button
+        Color btnColor = new Color(220, 53, 69);
+        Color hoverColor = btnColor.darker();
+        logoutButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                logoutButton.setBackground(hoverColor);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                logoutButton.setBackground(btnColor);
+            }
+        });
     }
 
     private void addComponents() {
@@ -75,6 +101,7 @@ public class NavbarPanel extends JPanel {
         JPanel userInfoPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 5));
         userInfoPanel.setOpaque(false);
         userInfoPanel.add(greetingLabel);
+        userInfoPanel.add(logoutButton); // Add logout button to panel
         userInfoPanel.add(profileIconLabel);
 
         add(brandPanel, BorderLayout.WEST);
@@ -83,6 +110,7 @@ public class NavbarPanel extends JPanel {
     }
 
     private void setupEventHandlers() {
+        // Keep the profile icon functionality
         profileIconLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -96,6 +124,9 @@ public class NavbarPanel extends JPanel {
                 }
             }
         });
+
+        // Add action listener for the logout button
+        logoutButton.addActionListener(e -> parentFrame.logout());
     }
 
     public void setGreeting(String greeting) {
@@ -108,5 +139,7 @@ public class NavbarPanel extends JPanel {
 
     public void showProfileIcon(boolean show) {
         profileIconLabel.setVisible(show);
+        // Also show/hide logout button alongside the profile icon
+        logoutButton.setVisible(show);
     }
 }
