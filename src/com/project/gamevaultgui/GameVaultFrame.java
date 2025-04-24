@@ -8,6 +8,7 @@ import com.project.gamevaultcli.management.TransactionManagement;
 import com.project.gamevaultcli.management.UserManagement;
 import com.project.gamevaultcli.entities.User;
 import com.project.gamevaultcli.entities.Transaction;
+import com.project.gamevaultcli.entities.Game;
 import com.project.gamevaultcli.exceptions.InvalidUserDataException;
 import com.project.gamevaultcli.exceptions.UserNotFoundException;
 
@@ -23,7 +24,6 @@ import java.time.LocalDateTime;
 import com.project.gamevaultcli.helpers.DBUtil;
 import java.sql.SQLException;
 import java.io.IOException;
-
 
 public class GameVaultFrame extends JFrame {
 
@@ -52,7 +52,6 @@ public class GameVaultFrame extends JFrame {
     private final OrderManagement orderManagement;
     private final TransactionManagement transactionManagement;
 
-
     private User currentUser;
     private boolean isAdmin = false; // Flag to track if the current perspective is admin
 
@@ -62,8 +61,7 @@ public class GameVaultFrame extends JFrame {
             GameManagement gameManagement,
             CartManagement cartManagement,
             OrderManagement orderManagement,
-            TransactionManagement transactionManagement
-    ) {
+            TransactionManagement transactionManagement) {
         this.gameVaultManagement = gameVaultManagement;
         this.userManagement = userManagement;
         this.gameManagement = gameManagement;
@@ -93,7 +91,7 @@ public class GameVaultFrame extends JFrame {
         });
     }
 
-     private void initComponents() {
+    private void initComponents() {
         sidebarPanel = new SidebarPanel(this);
         navbarPanel = new NavbarPanel("Welcome", this);
 
@@ -101,7 +99,8 @@ public class GameVaultFrame extends JFrame {
         cardLayout = new CardLayout();
         centerPanel.setLayout(cardLayout);
 
-        dashboardPanel = new DashboardPanel(userManagement, gameManagement, orderManagement, transactionManagement, cartManagement, this);
+        dashboardPanel = new DashboardPanel(userManagement, gameManagement, orderManagement, transactionManagement,
+                cartManagement, this);
         cartPanel = new CartPanel(cartManagement, gameManagement, this);
         billingPanel = new BillingPanel(orderManagement, transactionManagement, this);
         userPanel = new UserPanel(this, userManagement, transactionManagement);
@@ -134,11 +133,12 @@ public class GameVaultFrame extends JFrame {
     private void setupEventHandlers() {
         // Event handlers for sidebar buttons are handled in SidebarPanel
         // Role selection handled in the roleSelectionPanel
-         // Navbar profile click handled in NavbarPanel
+        // Navbar profile click handled in NavbarPanel
     }
 
     /**
      * Displays the panel with the given key in the CardLayout.
+     * 
      * @param panelName The key of the panel to show.
      */
     public void showPanel(String panelName) {
@@ -152,38 +152,57 @@ public class GameVaultFrame extends JFrame {
         } else if ("Billing".equals(panelName) && currentUser != null) { // Use the key "Billing" here
             billingPanel.loadBills(currentUser.getUserId());
         } else if ("User Profile".equals(panelName)) { // Match panel name
-             userPanel.loadUserInfo(currentUser);
+            userPanel.loadUserInfo(currentUser);
         } else if ("Login".equals(panelName)) {
             loginPanel.resetLoginForm();
         } else if ("Signup".equals(panelName)) {
             signupPanel.resetSignupForm();
         } else if ("Manage Games".equals(panelName)) { // Load data when Manage Games is shown
-             manageGamesPanel.loadGames(); // Call load method
+            manageGamesPanel.loadGames(); // Call load method
         } else if ("Manage Users".equals(panelName)) { // Load data when Manage Users is shown
-             manageUsersPanel.loadUsers(); // Call load method
+            manageUsersPanel.loadUsers(); // Call load method
         }
 
         // Update Navbar and Sidebar visibility/state after showing the panel
         updateUIState(panelName);
     }
 
-     // Method to manage Navbar and Sidebar visibility and state
-     private void updateUIState(String intendedPanelName) {
+    // Method to manage Navbar and Sidebar visibility and state
+    private void updateUIState(String intendedPanelName) {
         String pageTitle;
 
-        switch(intendedPanelName) {
-            case "Dashboard":       pageTitle = "Dashboard"; break;
-            case "Cart":            pageTitle = "Shopping Cart"; break;
-            case "Billing":         pageTitle = "Your Orders History"; break;
-            case "User Profile":    pageTitle = "User Profile"; break;
-            case "Manage Games":    pageTitle = "Manage Games"; break;
-            case "Manage Users":    pageTitle = "Manage Users"; break;
-            case "RoleSelection":   pageTitle = "Game Vault - Role Selection"; break;
-            case "Login":           pageTitle = "Game Vault - Login"; break;
-            case "Signup":          pageTitle = "Game Vault - Signup"; break;
-            default:                pageTitle = "Game Vault"; break;
+        switch (intendedPanelName) {
+            case "Dashboard":
+                pageTitle = "Dashboard";
+                break;
+            case "Cart":
+                pageTitle = "Shopping Cart";
+                break;
+            case "Billing":
+                pageTitle = "Your Orders History";
+                break;
+            case "User Profile":
+                pageTitle = "User Profile";
+                break;
+            case "Manage Games":
+                pageTitle = "Manage Games";
+                break;
+            case "Manage Users":
+                pageTitle = "Manage Users";
+                break;
+            case "RoleSelection":
+                pageTitle = "Game Vault - Role Selection";
+                break;
+            case "Login":
+                pageTitle = "Game Vault - Login";
+                break;
+            case "Signup":
+                pageTitle = "Game Vault - Signup";
+                break;
+            default:
+                pageTitle = "Game Vault";
+                break;
         }
-
 
         // Update Navbar
         if (currentUser != null) {
@@ -191,11 +210,10 @@ public class GameVaultFrame extends JFrame {
             navbarPanel.setPageTitle(pageTitle);
             navbarPanel.showProfileIcon(true);
         } else if (isAdmin) {
-             navbarPanel.setGreeting("Hello, Admin");
-             navbarPanel.setPageTitle(pageTitle);
-             navbarPanel.showProfileIcon(true); // Show profile icon for admin too for logout access
-        }
-        else {
+            navbarPanel.setGreeting("Hello, Admin");
+            navbarPanel.setPageTitle(pageTitle);
+            navbarPanel.showProfileIcon(true); // Show profile icon for admin too for logout access
+        } else {
             navbarPanel.setGreeting("");
             navbarPanel.setPageTitle(pageTitle);
             navbarPanel.showProfileIcon(false);
@@ -205,23 +223,36 @@ public class GameVaultFrame extends JFrame {
         if (currentUser != null) {
             sidebarPanel.setVisible(true);
             sidebarPanel.updateSidebarForUser();
-             switch(intendedPanelName) {
-                 case "Dashboard":    sidebarPanel.highlightDashboardButton(); break;
-                 case "Cart":         sidebarPanel.highlightCartButton(); break;
-                 case "Billing":      sidebarPanel.highlightYourOrdersButton(); break;
-                 case "User Profile": sidebarPanel.highlightUserButton(); break;
-             }
+            switch (intendedPanelName) {
+                case "Dashboard":
+                    sidebarPanel.highlightDashboardButton();
+                    break;
+                case "Cart":
+                    sidebarPanel.highlightCartButton();
+                    break;
+                case "Billing":
+                    sidebarPanel.highlightYourOrdersButton();
+                    break;
+                case "User Profile":
+                    sidebarPanel.highlightUserButton();
+                    break;
+            }
 
         } else if (isAdmin) {
-             sidebarPanel.setVisible(true);
-             sidebarPanel.updateSidebarForAdmin();
-             switch(intendedPanelName) {
-                 case "Dashboard":    sidebarPanel.highlightDashboardButton(); break;
-                 case "Manage Games": sidebarPanel.highlightManageGamesButton(); break;
-                 case "Manage Users": sidebarPanel.highlightManageUsersButton(); break;
-             }
-        }
-        else {
+            sidebarPanel.setVisible(true);
+            sidebarPanel.updateSidebarForAdmin();
+            switch (intendedPanelName) {
+                case "Dashboard":
+                    sidebarPanel.highlightDashboardButton();
+                    break;
+                case "Manage Games":
+                    sidebarPanel.highlightManageGamesButton();
+                    break;
+                case "Manage Users":
+                    sidebarPanel.highlightManageUsersButton();
+                    break;
+            }
+        } else {
             sidebarPanel.setVisible(false);
             sidebarPanel.hideAllButtons();
             sidebarPanel.resetButtonColors();
@@ -229,15 +260,15 @@ public class GameVaultFrame extends JFrame {
 
         revalidate();
         repaint();
-     }
-
-
-     // Method to handle user selection from RoleSelection -> now shows Login
-    public void selectUserPerspective() {
-         showPanel("Login");
     }
 
-    // Method to handle admin selection from RoleSelection -> goes to admin dashboard
+    // Method to handle user selection from RoleSelection -> now shows Login
+    public void selectUserPerspective() {
+        showPanel("Login");
+    }
+
+    // Method to handle admin selection from RoleSelection -> goes to admin
+    // dashboard
     public void selectAdminPerspective() {
         currentUser = null;
         isAdmin = true;
@@ -247,7 +278,8 @@ public class GameVaultFrame extends JFrame {
     /**
      * Attempts to log in a user with the given email and password.
      * Called from LoginPanel.
-     * @param email The user's email.
+     * 
+     * @param email    The user's email.
      * @param password The user's password.
      */
     public void attemptLogin(String email, String password) {
@@ -256,70 +288,77 @@ public class GameVaultFrame extends JFrame {
             this.currentUser = user;
             this.isAdmin = false;
 
-            // Optional: JOptionPane.showMessageDialog(this, "Login successful! Welcome, " + user.getUsername(), "Success", JOptionPane.INFORMATION_MESSAGE);
+            // Optional: JOptionPane.showMessageDialog(this, "Login successful! Welcome, " +
+            // user.getUsername(), "Success", JOptionPane.INFORMATION_MESSAGE);
 
             showPanel("Dashboard");
 
         } catch (UserNotFoundException e) {
             loginPanel.displayErrorMessage("Invalid email or password.");
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An error occurred during login: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "An error occurred during login: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             loginPanel.displayErrorMessage("An unexpected error occurred.");
         }
     }
 
-     /**
-      * Handles adding balance to the current user's wallet.
-      * Called from UserPanel.
-      * @param amount The amount to add (must be positive).
-      */
+    /**
+     * Handles adding balance to the current user's wallet.
+     * Called from UserPanel.
+     * 
+     * @param amount The amount to add (must be positive).
+     */
     public void addBalanceToCurrentUser(float amount) {
-         if (currentUser == null) {
-             JOptionPane.showMessageDialog(this, "No user logged in to add balance.", "Error", JOptionPane.ERROR_MESSAGE);
-             return;
-         }
-         if (amount <= 0) {
-              JOptionPane.showMessageDialog(this, "Amount must be positive.", "Validation Error", JOptionPane.WARNING_MESSAGE);
-              return;
-         }
+        if (currentUser == null) {
+            JOptionPane.showMessageDialog(this, "No user logged in to add balance.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (amount <= 0) {
+            JOptionPane.showMessageDialog(this, "Amount must be positive.", "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-         try {
-             userManagement.updateWalletBalance(currentUser.getUserId(), amount);
+        try {
+            userManagement.updateWalletBalance(currentUser.getUserId(), amount);
 
-             // Re-fetch the user from the database to get the absolutely latest balance
-             this.currentUser = userManagement.getUser(currentUser.getUserId());
+            // Re-fetch the user from the database to get the absolutely latest balance
+            this.currentUser = userManagement.getUser(currentUser.getUserId());
 
-             // Record the transaction for the top-up
-             Transaction topupTransaction = new Transaction(
-                 null, // transactionId (will be generated by DB)
-                 null, // orderId (null for top-up transactions)
-                 currentUser.getUserId(),
-                 "Top-up", // Transaction type
-                 amount,
-                 LocalDateTime.now() // Current date/time
-             );
-             transactionManagement.addTransaction(topupTransaction);
+            // Record the transaction for the top-up
+            Transaction topupTransaction = new Transaction(
+                    null, // transactionId (will be generated by DB)
+                    null, // orderId (null for top-up transactions)
+                    currentUser.getUserId(),
+                    "Top-up", // Transaction type
+                    amount,
+                    LocalDateTime.now() // Current date/time
+            );
+            transactionManagement.addTransaction(topupTransaction);
 
+            JOptionPane.showMessageDialog(this, String.format("$%.2f added to your wallet!", amount), "Balance Updated",
+                    JOptionPane.INFORMATION_MESSAGE);
 
-             JOptionPane.showMessageDialog(this, String.format("$%.2f added to your wallet!", amount), "Balance Updated", JOptionPane.INFORMATION_MESSAGE);
+            // Refresh the UI (User Profile and potentially Dashboard)
+            refreshCurrentUserAndUI(); // Call the dedicated refresh method
 
-             // Refresh the UI (User Profile and potentially Dashboard)
-             refreshCurrentUserAndUI(); // Call the dedicated refresh method
-
-         } catch (UserNotFoundException e) {
-             JOptionPane.showMessageDialog(this, "User not found during balance update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-             e.printStackTrace();
-         }
-          catch (Exception e) {
-             JOptionPane.showMessageDialog(this, "An error occurred while adding balance: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-             e.printStackTrace();
-         }
-     }
+        } catch (UserNotFoundException e) {
+            JOptionPane.showMessageDialog(this, "User not found during balance update: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An error occurred while adding balance: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Refreshes the current user object from the DB and updates relevant panels.
-     * Called after actions that change user state (like adding balance or purchasing).
+     * Called after actions that change user state (like adding balance or
+     * purchasing).
      */
     public void refreshCurrentUserAndUI() {
         if (currentUser != null) {
@@ -332,36 +371,41 @@ public class GameVaultFrame extends JFrame {
                 if ("User Profile".equals(currentPanel)) {
                     userPanel.loadUserInfo(this.currentUser);
                 } else if ("Dashboard".equals(currentPanel)) {
-                     dashboardPanel.loadDashboardData(this.currentUser.getUserId());
-                     // Note: Dashboard also loads orders/transactions, which might also be affected by purchase
+                    dashboardPanel.loadDashboardData(this.currentUser.getUserId());
+                    // Note: Dashboard also loads orders/transactions, which might also be affected
+                    // by purchase
                 } else if ("Billing".equals(currentPanel)) {
-                     billingPanel.loadBills(this.currentUser.getUserId());
+                    billingPanel.loadBills(this.currentUser.getUserId());
                 }
-                 // Cart doesn't need refresh after purchase as it clears anyway and is reloaded when shown.
+                // Cart doesn't need refresh after purchase as it clears anyway and is reloaded
+                // when shown.
 
                 // Update Navbar greeting (in case username changed, though not expected here)
-                 updateUIState(currentPanel); // Refresh UI state for the current panel
-
+                updateUIState(currentPanel); // Refresh UI state for the current panel
 
             } catch (UserNotFoundException e) {
-                // This means the user was somehow deleted while logged in - handle appropriately
-                JOptionPane.showMessageDialog(this, "Your user account was not found. Logging out.", "Account Error", JOptionPane.ERROR_MESSAGE);
+                // This means the user was somehow deleted while logged in - handle
+                // appropriately
+                JOptionPane.showMessageDialog(this, "Your user account was not found. Logging out.", "Account Error",
+                        JOptionPane.ERROR_MESSAGE);
                 logout(); // Force logout
             } catch (Exception e) {
-                 JOptionPane.showMessageDialog(this, "Error refreshing user data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                 e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error refreshing user data: " + e.getMessage(), "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
             }
         }
-        // If no user is logged in (e.g., Admin view), this method does nothing to currentUser,
-        // but might still need to trigger dashboard refresh if admin actions affected global stats.
+        // If no user is logged in (e.g., Admin view), this method does nothing to
+        // currentUser,
+        // but might still need to trigger dashboard refresh if admin actions affected
+        // global stats.
         // For now, refreshCurrentUserAndUI is only called after user actions.
     }
-
-
 
     /**
      * Handles updating the current user's username.
      * Called from UserPanel.
+     * 
      * @param newUsername The new username provided by the user.
      */
     public void updateCurrentUserUsername(String newUsername) {
@@ -372,24 +416,25 @@ public class GameVaultFrame extends JFrame {
 
         try {
             if (newUsername == null || newUsername.trim().isEmpty()) {
-                 JOptionPane.showMessageDialog(this, "Username cannot be empty.", "Validation Error", JOptionPane.WARNING_MESSAGE);
-                 return;
+                JOptionPane.showMessageDialog(this, "Username cannot be empty.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
 
             // Create a new User object with updated username, keeping other fields the same
             User updatedUser = new User(
-                currentUser.getUserId(),
-                currentUser.getEmail(),
-                currentUser.getPassword(),
-                newUsername.trim(),
-                currentUser.getWalletBalance(),
-                currentUser.getCreatedAt()
-            );
+                    currentUser.getUserId(),
+                    currentUser.getEmail(),
+                    currentUser.getPassword(),
+                    newUsername.trim(),
+                    currentUser.getWalletBalance(),
+                    currentUser.getCreatedAt());
 
             userManagement.updateUser(updatedUser);
             this.currentUser = updatedUser; // Update the frame's current user object
 
-            JOptionPane.showMessageDialog(this, "Username updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Username updated successfully!", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
 
             // Refresh the User Profile panel
             userPanel.loadUserInfo(this.currentUser);
@@ -397,16 +442,17 @@ public class GameVaultFrame extends JFrame {
             updateUIState(getCurrentPanelName());
 
         } catch (InvalidUserDataException e) {
-             JOptionPane.showMessageDialog(this, "Update Failed: " + e.getMessage(), "Validation Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Update Failed: " + e.getMessage(), "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
         } catch (UserNotFoundException e) {
-             JOptionPane.showMessageDialog(this, "User not found during update: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "An error occurred while updating username: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "User not found during update: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "An error occurred while updating username: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
-
 
     /**
      * Handles the logout process.
@@ -424,7 +470,6 @@ public class GameVaultFrame extends JFrame {
         showPanel("RoleSelection"); // Navigate back to Role Selection
     }
 
-
     public User getCurrentUser() {
         return currentUser;
     }
@@ -435,27 +480,35 @@ public class GameVaultFrame extends JFrame {
 
     // Helper method to get the currently displayed panel name
     private String getCurrentPanelName() {
-         LayoutManager layout = centerPanel.getLayout();
-         if (layout instanceof CardLayout) {
-             for (Component comp : centerPanel.getComponents()) {
-                 if (comp.isVisible()) {
-                      // Check instances directly for panels with unique types
-                      if (comp instanceof DashboardPanel) return "Dashboard";
-                      if (comp instanceof CartPanel) return "Cart";
-                      if (comp instanceof BillingPanel) return "Billing";
-                      if (comp instanceof UserPanel) return "User Profile";
-                      if (comp instanceof ManageGamesPanel) return "Manage Games";
-                      if (comp instanceof ManageUsersPanel) return "Manage Users";
-                      // For panels that are just JPanels, compare instances
-                      if (comp.equals(roleSelectionPanel)) return "RoleSelection";
-                      if (comp.equals(loginPanel)) return "Login";
-                      if (comp.equals(signupPanel)) return "Signup";
-                 }
-             }
-         }
+        LayoutManager layout = centerPanel.getLayout();
+        if (layout instanceof CardLayout) {
+            for (Component comp : centerPanel.getComponents()) {
+                if (comp.isVisible()) {
+                    // Check instances directly for panels with unique types
+                    if (comp instanceof DashboardPanel)
+                        return "Dashboard";
+                    if (comp instanceof CartPanel)
+                        return "Cart";
+                    if (comp instanceof BillingPanel)
+                        return "Billing";
+                    if (comp instanceof UserPanel)
+                        return "User Profile";
+                    if (comp instanceof ManageGamesPanel)
+                        return "Manage Games";
+                    if (comp instanceof ManageUsersPanel)
+                        return "Manage Users";
+                    // For panels that are just JPanels, compare instances
+                    if (comp.equals(roleSelectionPanel))
+                        return "RoleSelection";
+                    if (comp.equals(loginPanel))
+                        return "Login";
+                    if (comp.equals(signupPanel))
+                        return "Signup";
+                }
+            }
+        }
         return "";
     }
-
 
     // Add methods to access management classes
     public UserManagement getUserManagement() {
@@ -480,17 +533,16 @@ public class GameVaultFrame extends JFrame {
 
     private JPanel createRoleSelectionPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-         panel.setBackground(new Color(230, 235, 240));
+        panel.setBackground(new Color(230, 235, 240));
         JLabel selectRoleLabel = new JLabel("Select Your Role:");
         selectRoleLabel.setFont(new Font("SansSerif", Font.BOLD, 28));
-         selectRoleLabel.setForeground(new Color(50, 50, 50));
+        selectRoleLabel.setForeground(new Color(50, 50, 50));
 
         JButton userButton = new JButton("User");
         JButton adminButton = new JButton("Admin");
 
         styleRoleButton(userButton);
         styleRoleButton(adminButton);
-
 
         userButton.addActionListener(e -> selectUserPerspective());
         adminButton.addActionListener(e -> selectAdminPerspective());
@@ -503,7 +555,7 @@ public class GameVaultFrame extends JFrame {
         panel.add(selectRoleLabel, gbc);
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 20));
-         buttonPanel.setOpaque(false);
+        buttonPanel.setOpaque(false);
         buttonPanel.add(userButton);
         buttonPanel.add(adminButton);
 
@@ -511,60 +563,62 @@ public class GameVaultFrame extends JFrame {
         gbc.insets = new Insets(20, 10, 20, 10);
         panel.add(buttonPanel, gbc);
 
-         gbc.gridx = 0;
-         gbc.gridy = 2;
-         gbc.weighty = 1.0;
-         gbc.fill = GridBagConstraints.BOTH;
-         gbc.gridwidth = 2;
-         panel.add(Box.createVerticalGlue(), gbc);
-
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weighty = 1.0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridwidth = 2;
+        panel.add(Box.createVerticalGlue(), gbc);
 
         return panel;
     }
 
-     private void styleRoleButton(JButton button) {
-         button.setFont(new Font("SansSerif", Font.BOLD, 16));
-         button.setFocusPainted(false);
-         button.setBorder(BorderFactory.createCompoundBorder(
-             BorderFactory.createLineBorder(new Color(0, 123, 255), 2, true), // Blue border
-             BorderFactory.createEmptyBorder(15, 30, 15, 30) // Padding
-         ));
-         button.setBackground(new Color(0, 123, 255)); // Blue background
-         button.setForeground(Color.WHITE); // White text
-         button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    private void styleRoleButton(JButton button) {
+        button.setFont(new Font("SansSerif", Font.BOLD, 16));
+        button.setFocusPainted(false);
+        button.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(new Color(0, 123, 255), 2, true), // Blue border
+                BorderFactory.createEmptyBorder(15, 30, 15, 30) // Padding
+        ));
+        button.setBackground(new Color(0, 123, 255)); // Blue background
+        button.setForeground(Color.WHITE); // White text
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-         Color bgColor = new Color(0, 123, 255);
-         Color hoverColor = bgColor.darker();
-         button.addMouseListener(new java.awt.event.MouseAdapter() {
-             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                 button.setBackground(hoverColor);
-             }
-             public void mouseExited(java.awt.event.MouseEvent evt) {
-                  button.setBackground(bgColor);
-             }
-         });
-     }
+        Color bgColor = new Color(0, 123, 255);
+        Color hoverColor = bgColor.darker();
+        button.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                button.setBackground(hoverColor);
+            }
 
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                button.setBackground(bgColor);
+            }
+        });
+    }
 
     public static void main(String[] args) {
         // --- FORCE DATABASE CONNECTION AT THE VERY START ---
         try {
-             System.out.println("Attempting to establish database connection...");
-             DBUtil.getConnection();
-             System.out.println("Database connection established successfully.");
+            System.out.println("Attempting to establish database connection...");
+            DBUtil.getConnection();
+            System.out.println("Database connection established successfully.");
 
         } catch (SQLException | IOException e) {
-             System.err.println("Failed to establish initial database connection.");
-             e.printStackTrace();
-             JOptionPane.showMessageDialog(null, "Failed to connect to the database.\nPlease check connection details and ensure MySQL is running.\nError: " + e.getMessage(), "Database Connection Error", JOptionPane.ERROR_MESSAGE);
-             System.exit(1);
+            System.err.println("Failed to establish initial database connection.");
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null,
+                    "Failed to connect to the database.\nPlease check connection details and ensure MySQL is running.\nError: "
+                            + e.getMessage(),
+                    "Database Connection Error", JOptionPane.ERROR_MESSAGE);
+            System.exit(1);
         }
-
 
         // Initialize management classes
         com.project.gamevaultcli.storage.UserStorage userStorage = new com.project.gamevaultcli.storage.UserStorage();
         com.project.gamevaultcli.storage.GameStorage gameStorage = new com.project.gamevaultcli.storage.GameStorage();
-        com.project.gamevaultcli.storage.CartStorage cartStorage = new com.project.gamevaultcli.storage.CartStorage(gameStorage);
+        com.project.gamevaultcli.storage.CartStorage cartStorage = new com.project.gamevaultcli.storage.CartStorage(
+                gameStorage);
         com.project.gamevaultcli.storage.OrderStorage orderStorage = new com.project.gamevaultcli.storage.OrderStorage();
         com.project.gamevaultcli.storage.TransactionStorage transactionStorage = new com.project.gamevaultcli.storage.TransactionStorage();
 
@@ -572,24 +626,61 @@ public class GameVaultFrame extends JFrame {
         GameManagement gameManagement = new GameManagement(gameStorage);
         CartManagement cartManagement = new CartManagement(cartStorage);
         TransactionManagement transactionManagement = new TransactionManagement(transactionStorage);
-        OrderManagement orderManagement = new OrderManagement(orderStorage, cartStorage, userStorage, transactionManagement);
+        OrderManagement orderManagement = new OrderManagement(orderStorage, cartStorage, userStorage,
+                transactionManagement);
 
-        GameVaultManagement vaultManager = new GameVaultManagement(userManagement, gameManagement, orderManagement, transactionManagement);
+        GameVaultManagement vaultManager = new GameVaultManagement(userManagement, gameManagement, orderManagement,
+                transactionManagement);
 
         // Initialize predefined data *after* connection and storage are ready.
-        // Consider adding a check here if you want this to run only once ever.
-        // try {
-        //     System.out.println("Initializing predefined data...");
-        //     vaultManager.initializeData();
-        //     System.out.println("Predefined data initialized.");
-        // } catch (Exception e) {
-        //     System.err.println("Error initializing predefined data: " + e.getMessage());
-        //     e.printStackTrace();
-        // }
+        try {
+            System.out.println("Initializing predefined data...");
 
+            // Add default user with easy to remember credentials
+            try {
+                User defaultUser = new User("user@example.com", "password123", "DefaultUser", 100.0f);
+                userManagement.addUser(defaultUser);
+                System.out.println("Added default user: " + defaultUser.getUsername());
+            } catch (Exception e) {
+                System.out.println("Default user may already exist: " + e.getMessage());
+            }
+
+            // Add default games for testing
+            try {
+                Game game1 = new Game("Minecraft", "A sandbox building game", "Mojang", "PC/Mobile/Console", 29.99f,
+                        new java.util.Date());
+                gameManagement.addGame(game1);
+
+                Game game2 = new Game("FIFA 2025", "Latest soccer simulation", "EA Sports", "PC/Console", 59.99f,
+                        new java.util.Date());
+                gameManagement.addGame(game2);
+
+                Game game3 = new Game("Call of Duty: Modern Warfare", "FPS action game", "Activision", "PC/Console",
+                        49.99f, new java.util.Date());
+                gameManagement.addGame(game3);
+
+                Game game4 = new Game("The Legend of Zelda", "Action-adventure game", "Nintendo", "Switch", 59.99f,
+                        new java.util.Date());
+                gameManagement.addGame(game4);
+
+                Game game5 = new Game("Among Us", "Social deduction game", "InnerSloth", "PC/Mobile", 4.99f,
+                        new java.util.Date());
+                gameManagement.addGame(game5);
+
+                System.out.println("Added default games to the database");
+            } catch (Exception e) {
+                System.out.println("Some games may already exist: " + e.getMessage());
+            }
+
+            System.out.println("Predefined data initialized.");
+        } catch (Exception e) {
+            System.err.println("Error initializing predefined data: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         SwingUtilities.invokeLater(() -> {
-            new GameVaultFrame(vaultManager, userManagement, gameManagement, cartManagement, orderManagement, transactionManagement).setVisible(true);
+            new GameVaultFrame(vaultManager, userManagement, gameManagement, cartManagement, orderManagement,
+                    transactionManagement).setVisible(true);
         });
     }
 }

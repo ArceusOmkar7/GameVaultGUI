@@ -1,4 +1,3 @@
-
 package com.project.gamevaultgui;
 
 import javax.swing.*;
@@ -14,6 +13,7 @@ public class LoginPanel extends JPanel {
     private JButton loginButton;
     private JLabel errorMessageLabel; // Label to display login errors
     private JLabel signupLink; // Label for the signup link
+    private JLabel credentialsLabel; // Label to display default credentials
 
     private final GameVaultFrame parentFrame; // Reference to the parent frame
 
@@ -39,9 +39,17 @@ public class LoginPanel extends JPanel {
         errorMessageLabel = new JLabel("");
         errorMessageLabel.setForeground(Color.RED);
 
-        signupLink = new JLabel("<html><a href=\"\">Don't have an account? Sign Up</a></html>"); // HTML for clickable link appearance
+        signupLink = new JLabel("<html><a href=\"\">Don't have an account? Sign Up</a></html>"); // HTML for clickable
+                                                                                                 // link appearance
         signupLink.setForeground(new Color(0, 123, 255)); // Link color
         signupLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Hand cursor
+
+        // Add default login credentials label
+        credentialsLabel = new JLabel(
+                "<html><b>Default Login:</b> Email: user@example.com | Password: password123</html>");
+        credentialsLabel.setForeground(new Color(70, 130, 180)); // Steel blue color
+        credentialsLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        credentialsLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         // --- Styling ---
         Font labelFont = new Font("SansSerif", Font.BOLD, 14);
@@ -58,24 +66,30 @@ public class LoginPanel extends JPanel {
         loginButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
         loginButton.setOpaque(true); // Ensure background is painted
 
-         // Button Hover Effect
-         Color loginBtnBg = new Color(0, 123, 255);
-         Color loginBtnHover = loginBtnBg.darker();
-         loginButton.addMouseListener(new MouseAdapter() {
-             @Override public void mouseEntered(MouseEvent e) { loginButton.setBackground(loginBtnHover); }
-             @Override public void mouseExited(MouseEvent e) { loginButton.setBackground(loginBtnBg); }
-         });
+        // Button Hover Effect
+        Color loginBtnBg = new Color(0, 123, 255);
+        Color loginBtnHover = loginBtnBg.darker();
+        loginButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                loginButton.setBackground(loginBtnHover);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                loginButton.setBackground(loginBtnBg);
+            }
+        });
     }
 
     private void addComponents() {
         // Panel to hold the login form content with a border
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createCompoundBorder(
-             BorderFactory.createLineBorder(new Color(150, 150, 150), 1), // Light grey border
-             BorderFactory.createEmptyBorder(30, 30, 30, 30) // Inner padding
+                BorderFactory.createLineBorder(new Color(150, 150, 150), 1), // Light grey border
+                BorderFactory.createEmptyBorder(30, 30, 30, 30) // Inner padding
         ));
         formPanel.setBackground(Color.WHITE); // White background for the form panel
-
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -94,9 +108,16 @@ public class LoginPanel extends JPanel {
         gbc.insets = new Insets(0, 0, 20, 0);
         formPanel.add(titleLabel, gbc);
 
-        // Email Row
+        // Add credentials helper label below the title
         gbc.gridx = 0;
         gbc.gridy = 1;
+        gbc.gridwidth = 2;
+        gbc.insets = new Insets(0, 0, 15, 0);
+        formPanel.add(credentialsLabel, gbc);
+
+        // Email Row
+        gbc.gridx = 0;
+        gbc.gridy = 2;
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.EAST;
         gbc.insets = new Insets(5, 5, 5, 5);
@@ -104,54 +125,54 @@ public class LoginPanel extends JPanel {
         formPanel.add(new JLabel("Email:"), gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0; // Field takes extra space
         formPanel.add(emailField, gbc);
 
         // Password Row
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.EAST;
-         gbc.weightx = 0;
+        gbc.weightx = 0;
         formPanel.add(new JLabel("Password:"), gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0;
         formPanel.add(passwordField, gbc);
 
         // Error Message Label
         gbc.gridx = 0;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 0, 10, 0);
-         gbc.weightx = 0;
+        gbc.weightx = 0;
         formPanel.add(errorMessageLabel, gbc);
 
         // Login Button
         gbc.gridx = 0;
-        gbc.gridy = 4;
+        gbc.gridy = 5;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.fill = GridBagConstraints.NONE; // Button doesn't fill horizontally
         gbc.insets = new Insets(10, 0, 10, 0); // Padding above the button
-         gbc.weightx = 0;
+        gbc.weightx = 0;
         formPanel.add(loginButton, gbc);
 
         // Signup Link
         gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridy = 6;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.insets = new Insets(10, 0, 0, 0); // Padding above the link
-         gbc.weightx = 0;
+        gbc.weightx = 0;
         formPanel.add(signupLink, gbc);
 
-
-        // Add the form panel to the main LoginPanel (which uses GridBagLayout for centering)
+        // Add the form panel to the main LoginPanel (which uses GridBagLayout for
+        // centering)
         GridBagConstraints mainGbc = new GridBagConstraints();
         mainGbc.gridx = 0;
         mainGbc.gridy = 0;
@@ -196,6 +217,7 @@ public class LoginPanel extends JPanel {
 
     /**
      * Displays an error message on the login panel.
+     * 
      * @param message The error message to display.
      */
     public void displayErrorMessage(String message) {
