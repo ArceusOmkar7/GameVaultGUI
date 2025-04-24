@@ -23,6 +23,7 @@ public class GameFormDialog extends JDialog {
     private JTextField platformField;
     private JTextField priceField;
     private JTextField releaseDateField;
+    private JLabel dateFormatHint; // Added label for date format hint
 
     private JButton saveButton;
     private JButton cancelButton;
@@ -67,10 +68,15 @@ public class GameFormDialog extends JDialog {
 
         titleField = new JTextField(25);
         descriptionField = new JTextField(30); // Larger for description
-        developerField = new JTextField(25);
+        developerField = new JTextField(20);
         platformField = new JTextField(20);
         priceField = new JTextField(10);
         releaseDateField = new JTextField(12); // YYYY-MM-DD format
+
+        // Create date format hint label
+        dateFormatHint = new JLabel("(YYYY-MM-DD)");
+        dateFormatHint.setFont(new Font("SansSerif", Font.ITALIC, 10));
+        dateFormatHint.setForeground(Color.GRAY);
 
         saveButton = new JButton("Save");
         cancelButton = new JButton("Cancel");
@@ -123,10 +129,8 @@ public class GameFormDialog extends JDialog {
         formPanel.setBackground(Color.WHITE); // White background for the form area
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(4, 8, 4, 8); // Padding around elements
-        gbc.anchor = GridBagConstraints.WEST; // Align labels right, fields left
+        gbc.insets = new Insets(6, 8, 6, 8); // Increased padding around elements for better spacing
         gbc.fill = GridBagConstraints.HORIZONTAL; // Fields fill horizontally
-        gbc.weightx = 1.0; // Fields get extra space
 
         int row = 0;
         // ID (hidden) - added to layout but invisible
@@ -137,77 +141,38 @@ public class GameFormDialog extends JDialog {
         row++; // Move to next row (even though ID is hidden, it occupies a space)
 
         // Title Row
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        formPanel.add(new JLabel("Title:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = row;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.weightx = 1.0;
-        formPanel.add(titleField, gbc);
-        row++;
+        addFormField(formPanel, gbc, row++, "Title:", titleField);
 
         // Description Row
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.anchor = GridBagConstraints.EAST;
-        gbc.weightx = 0;
-        formPanel.add(new JLabel("Description:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridy = row;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.weightx = 1.0;
-        formPanel.add(descriptionField, gbc);
-        row++;
+        addFormField(formPanel, gbc, row++, "Description:", descriptionField);
 
-        // Developer and Platform on the same row
-        JPanel devPlatformPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0)); // FlowLayout for fields
-                                                                                      // side-by-side
-        devPlatformPanel.setOpaque(false);
-        devPlatformPanel.add(developerField);
-        devPlatformPanel.add(platformField);
-        // Labels for Dev and Platform
-        gbc.gridx = 0;
-        gbc.gridy = row;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0;
-        gbc.anchor = GridBagConstraints.EAST;
-        JPanel devPlatformLabelPanel = new JPanel(new GridLayout(1, 2, 5, 0)); // Panel for labels
-        devPlatformLabelPanel.setOpaque(false);
-        devPlatformLabelPanel.add(new JLabel("Developer:"));
-        devPlatformLabelPanel.add(new JLabel("Platform:"));
-        formPanel.add(devPlatformLabelPanel, gbc);
-        gbc.gridx = 1;
-        gbc.gridy = row;
-        gbc.anchor = GridBagConstraints.WEST;
-        gbc.weightx = 1.0;
-        formPanel.add(devPlatformPanel, gbc);
-        row++;
+        // Developer Row
+        addFormField(formPanel, gbc, row++, "Developer:", developerField);
 
-        // Price and Release Date on the same row
-        JPanel priceDatePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
-        priceDatePanel.setOpaque(false);
-        priceDatePanel.add(priceField);
-        priceDatePanel.add(releaseDateField);
-        // Labels for Price and Release Date
+        // Platform Row
+        addFormField(formPanel, gbc, row++, "Platform:", platformField);
+
+        // Price Row
+        addFormField(formPanel, gbc, row++, "Price:", priceField);
+
+        // Release Date Row with format hint
         gbc.gridx = 0;
         gbc.gridy = row;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0;
         gbc.anchor = GridBagConstraints.EAST;
-        JPanel priceDateLabelPanel = new JPanel(new GridLayout(1, 2, 5, 0)); // Panel for labels
-        priceDateLabelPanel.setOpaque(false);
-        priceDateLabelPanel.add(new JLabel("Price:"));
-        priceDateLabelPanel.add(new JLabel("Release Date:"));
-        formPanel.add(priceDateLabelPanel, gbc);
+        gbc.weightx = 0;
+        formPanel.add(new JLabel("Release Date:"), gbc);
+
+        // Create panel for date field and hint
+        JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        datePanel.setOpaque(false);
+        datePanel.add(releaseDateField);
+        datePanel.add(dateFormatHint);
+
         gbc.gridx = 1;
         gbc.gridy = row;
         gbc.anchor = GridBagConstraints.WEST;
         gbc.weightx = 1.0;
-        formPanel.add(priceDatePanel, gbc);
+        formPanel.add(datePanel, gbc);
         row++;
 
         // Add vertical glue to push elements to the top
@@ -219,7 +184,7 @@ public class GameFormDialog extends JDialog {
         formPanel.add(Box.createVerticalGlue(), gbc);
 
         // Button panel
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10)); // Added more vertical padding
         buttonPanel.setOpaque(false);
         buttonPanel.add(saveButton);
         buttonPanel.add(cancelButton);
@@ -227,6 +192,25 @@ public class GameFormDialog extends JDialog {
         // Add form panel to the center and button panel to the south
         add(formPanel, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    // Helper method to add form fields with consistent alignment
+    private void addFormField(JPanel panel, GridBagConstraints gbc, int row, String labelText, JComponent field) {
+        JLabel label = new JLabel(labelText);
+        label.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.2;
+        gbc.anchor = GridBagConstraints.EAST;
+        panel.add(label, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = row;
+        gbc.weightx = 0.8;
+        gbc.anchor = GridBagConstraints.WEST;
+        panel.add(field, gbc);
     }
 
     private void setupEventHandlers() {
