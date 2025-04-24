@@ -4,7 +4,6 @@
  */
 package com.project.gamevaultcli.management;
 
-
 import com.project.gamevaultcli.entities.Game;
 import com.project.gamevaultcli.exceptions.GameNotFoundException;
 import com.project.gamevaultcli.storage.GameStorage;
@@ -29,6 +28,17 @@ public class GameManagement {
 
     public List<Game> getAllGames() {
         return gameStorage.findAll();
+    }
+
+    // Get games that a user owns (from completed orders)
+    public List<Game> getOwnedGames(int userId) {
+        return gameStorage.findOwnedGamesByUser(userId);
+    }
+
+    // Check if a user already owns a specific game
+    public boolean isGameOwnedByUser(int userId, int gameId) {
+        List<Game> ownedGames = getOwnedGames(userId);
+        return ownedGames.stream().anyMatch(game -> game.getGameId() == gameId);
     }
 
     public void addGame(Game game) {

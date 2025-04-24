@@ -4,7 +4,6 @@ import com.project.gamevaultcli.entities.Game;
 import com.project.gamevaultcli.management.GameManagement;
 import com.project.gamevaultcli.exceptions.GameNotFoundException;
 
-
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
@@ -18,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-
 public class ManageGamesPanel extends JPanel {
 
     private final GameManagement gameManagement;
@@ -31,9 +29,7 @@ public class ManageGamesPanel extends JPanel {
     private JButton addNewGameButton; // Button to trigger the add dialog
     private JButton deleteButton;
 
-
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
 
     public ManageGamesPanel(GameManagement gameManagement, GameVaultFrame parentFrame) { // Accept parent frame
         this.gameManagement = gameManagement;
@@ -56,41 +52,42 @@ public class ManageGamesPanel extends JPanel {
 
     private void initComponents() {
         // --- Games Table ---
-        gamesTableModel = new DefaultTableModel(new Object[]{"ID", "Title", "Developer", "Platform", "Price", "Release Date"}, 0) {
+        gamesTableModel = new DefaultTableModel(
+                new Object[] { "ID", "Title", "Developer", "Platform", "Price", "Release Date" }, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) { return false; }
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
         };
         gamesTable = new JTable(gamesTableModel);
         gamesScrollPane = new JScrollPane(gamesTable);
-         gamesScrollPane.setBorder(BorderFactory.createTitledBorder(
-                 BorderFactory.createLineBorder(new Color(180, 180, 180), 1),
+        gamesScrollPane.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createLineBorder(new Color(180, 180, 180), 1),
                 "Available Games",
                 TitledBorder.LEADING, TitledBorder.TOP,
-                new Font("SansSerif", Font.BOLD, 14), new Color(50, 50, 50)
-         ));
-         customizeTable(gamesTable);
-
+                new Font("SansSerif", Font.BOLD, 14), new Color(50, 50, 50)));
+        customizeTable(gamesTable);
 
         // --- Buttons ---
         addNewGameButton = new JButton("New Game Entry"); // Button to open dialog for adding
         deleteButton = new JButton("Delete Selected");
 
         // Style buttons
-         styleButton(addNewGameButton, new Color(40, 167, 69), Color.WHITE); // Green for New
-         styleButton(deleteButton, new Color(220, 53, 69), Color.WHITE); // Red for Delete
+        styleButton(addNewGameButton, new Color(40, 167, 69), Color.WHITE); // Green for New
+        styleButton(deleteButton, new Color(220, 53, 69), Color.WHITE); // Red for Delete
     }
 
-     private void customizeTable(JTable table) {
-         table.setFont(new Font("SansSerif", Font.PLAIN, 13));
-         table.setRowHeight(20);
-         table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
-         table.setFillsViewportHeight(true);
-         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-         table.setGridColor(new Color(200, 200, 200));
-         table.setBackground(Color.WHITE);
-         table.getTableHeader().setBackground(new Color(220, 220, 220));
-         table.setAutoCreateRowSorter(true); // Enable sorting
-     }
+    private void customizeTable(JTable table) {
+        table.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        table.setRowHeight(20);
+        table.getTableHeader().setFont(new Font("SansSerif", Font.BOLD, 13));
+        table.setFillsViewportHeight(true);
+        table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        table.setGridColor(new Color(200, 200, 200));
+        table.setBackground(Color.WHITE);
+        table.getTableHeader().setBackground(new Color(220, 220, 220));
+        table.setAutoCreateRowSorter(true); // Enable sorting
+    }
 
     private void styleButton(JButton button, Color bgColor, Color fgColor) {
         button.setBackground(bgColor);
@@ -103,22 +100,31 @@ public class ManageGamesPanel extends JPanel {
 
         Color hoverColor = bgColor.darker();
         button.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) {
-                if (button.isEnabled()) button.setBackground(hoverColor);
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (button.isEnabled())
+                    button.setBackground(hoverColor);
             }
-            @Override public void mouseExited(MouseEvent e) {
-                if (button.isEnabled()) button.setBackground(bgColor);
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (button.isEnabled())
+                    button.setBackground(bgColor);
             }
-             @Override public void mousePressed(MouseEvent evt) {
-                 if (button.isEnabled()) button.setBackground(hoverColor.darker());
-             }
-             @Override
-             public void mouseReleased(MouseEvent evt) {
-                 if (button.isEnabled()) button.setBackground(button.getModel().isRollover() ? hoverColor : bgColor);
-             }
+
+            @Override
+            public void mousePressed(MouseEvent evt) {
+                if (button.isEnabled())
+                    button.setBackground(hoverColor.darker());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent evt) {
+                if (button.isEnabled())
+                    button.setBackground(button.getModel().isRollover() ? hoverColor : bgColor);
+            }
         });
     }
-
 
     private void addComponents() {
         // Panel for table buttons (New Game Entry, Delete)
@@ -138,7 +144,8 @@ public class ManageGamesPanel extends JPanel {
     }
 
     private void setupEventHandlers() {
-        // Table row selection listener - now only controls delete button and opens dialog
+        // Table row selection listener - now only controls delete button and opens
+        // dialog
         gamesTable.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting()) {
                 if (gamesTable.getSelectedRow() != -1) {
@@ -161,7 +168,6 @@ public class ManageGamesPanel extends JPanel {
             }
         });
 
-
         // Add New Game Button Action
         addNewGameButton.addActionListener(e -> addNewGame());
 
@@ -179,12 +185,13 @@ public class ManageGamesPanel extends JPanel {
         // After the dialog is closed, check if it was saved
         if (dialog.wasSaved()) {
             loadGames(); // Refresh the table to show the new game
+            parentFrame.refreshGameData(); // Refresh dashboard data when a game is added
         }
-         // No need to clear form on main panel, it's in the dialog
     }
 
     /**
      * Fetches the game and opens the dialog to edit it.
+     * 
      * @param gameId The ID of the game to edit.
      */
     private void editGame(int gameId) {
@@ -197,21 +204,22 @@ public class ManageGamesPanel extends JPanel {
                 // After the dialog is closed, check if it was saved
                 if (dialog.wasSaved()) {
                     loadGames(); // Refresh the table to show the updated game
+                    parentFrame.refreshGameData(); // Refresh dashboard data when a game is updated
                 }
             } else {
-                 JOptionPane.showMessageDialog(this, "Game not found for editing.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Game not found for editing.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (GameNotFoundException ex) {
-             JOptionPane.showMessageDialog(this, "Game not found for editing: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error fetching game for editing: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Game not found for editing: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error fetching game for editing: " + ex.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
             ex.printStackTrace();
         }
-         // Clear table selection after trying to edit (dialog closes anyway)
-         gamesTable.clearSelection();
+        // Clear table selection after trying to edit (dialog closes anyway)
+        gamesTable.clearSelection();
     }
-
 
     /**
      * Handles deleting the selected game.
@@ -219,7 +227,8 @@ public class ManageGamesPanel extends JPanel {
     private void deleteSelectedGame() { // Renamed for clarity
         int selectedRow = gamesTable.getSelectedRow();
         if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(this, "Please select a game to delete.", "No Selection", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please select a game to delete.", "No Selection",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -228,7 +237,8 @@ public class ManageGamesPanel extends JPanel {
         String gameTitle = (String) gamesTableModel.getValueAt(selectedRow, 1);
 
         int confirmResult = JOptionPane.showConfirmDialog(this,
-                "Are you sure you want to delete game '" + gameTitle + "' (ID: " + gameId + ")?\nThis action cannot be undone.",
+                "Are you sure you want to delete game '" + gameTitle + "' (ID: " + gameId
+                        + ")?\nThis action cannot be undone.",
                 "Confirm Delete",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE);
@@ -236,28 +246,35 @@ public class ManageGamesPanel extends JPanel {
         if (confirmResult == JOptionPane.YES_OPTION) {
             try {
                 // Potential foreign key issue here if the game is in a cart or order.
-                // Your storage/management layer needs to handle this (e.g., delete dependent records or database ON DELETE CASCADE).
+                // Your storage/management layer needs to handle this (e.g., delete dependent
+                // records or database ON DELETE CASCADE).
                 gameManagement.deleteGame(gameId);
-                JOptionPane.showMessageDialog(this, "Game deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Game deleted successfully!", "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
                 loadGames(); // Refresh the table
+                parentFrame.refreshGameData(); // Refresh dashboard data when a game is deleted
                 gamesTable.clearSelection(); // Clear selection after deletion
                 deleteButton.setEnabled(false); // Disable delete button
             } catch (Exception e) {
-                // Provide specific message if deletion fails due to constraint violation (e.g., game in cart)
+                // Provide specific message if deletion fails due to constraint violation (e.g.,
+                // game in cart)
                 if (e.getMessage() != null && e.getMessage().contains("foreign key constraint fails")) {
-                     JOptionPane.showMessageDialog(this, "Cannot delete game because it is referenced in user carts or orders.", "Deletion Failed", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this,
+                            "Cannot delete game because it is referenced in user carts or orders.", "Deletion Failed",
+                            JOptionPane.ERROR_MESSAGE);
                 } else {
-                    JOptionPane.showMessageDialog(this, "Error deleting game: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Error deleting game: " + e.getMessage(), "Database Error",
+                            JOptionPane.ERROR_MESSAGE);
                 }
                 e.printStackTrace();
             }
         }
     }
 
-
     /**
      * Loads all games from the database and populates the table.
-     * This method should be called when the panel is made visible and after saves/deletes.
+     * This method should be called when the panel is made visible and after
+     * saves/deletes.
      */
     public void loadGames() {
         gamesTableModel.setRowCount(0); // Clear existing data
@@ -265,8 +282,9 @@ public class ManageGamesPanel extends JPanel {
             List<Game> games = gameManagement.getAllGames();
             if (games != null) {
                 for (Game game : games) {
-                    String releaseDateStr = (game.getReleaseDate() != null) ? DATE_FORMAT.format(game.getReleaseDate()) : "N/A";
-                    gamesTableModel.addRow(new Object[]{
+                    String releaseDateStr = (game.getReleaseDate() != null) ? DATE_FORMAT.format(game.getReleaseDate())
+                            : "N/A";
+                    gamesTableModel.addRow(new Object[] {
                             game.getGameId(),
                             game.getTitle(),
                             game.getDeveloper(),
@@ -276,10 +294,11 @@ public class ManageGamesPanel extends JPanel {
                     });
                 }
             }
-             // Ensure delete button state is correct after loading
-             deleteButton.setEnabled(gamesTable.getSelectedRow() != -1);
+            // Ensure delete button state is correct after loading
+            deleteButton.setEnabled(gamesTable.getSelectedRow() != -1);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error loading games: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading games: " + e.getMessage(), "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }

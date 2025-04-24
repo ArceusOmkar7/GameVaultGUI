@@ -39,14 +39,13 @@ public class LoginPanel extends JPanel {
         errorMessageLabel = new JLabel("");
         errorMessageLabel.setForeground(Color.RED);
 
-        signupLink = new JLabel("<html><a href=\"\">Don't have an account? Sign Up</a></html>"); // HTML for clickable
-                                                                                                 // link appearance
+        signupLink = new JLabel("<html><a href=\"\">Don't have an account? Sign Up</a></html>");
         signupLink.setForeground(new Color(0, 123, 255)); // Link color
         signupLink.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Hand cursor
 
-        // Add default login credentials label
+        // Update default login credentials label to show the correct credentials
         credentialsLabel = new JLabel(
-                "<html><b>Default Login:</b> Email: user@example.com | Password: password123</html>");
+                "<html><b>Default Login:</b> Email: user@user.com | Password: 1234</html>");
         credentialsLabel.setForeground(new Color(70, 130, 180)); // Steel blue color
         credentialsLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
         credentialsLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -225,11 +224,13 @@ public class LoginPanel extends JPanel {
     }
 
     /**
-     * Clears the input fields and error message when the panel is shown.
+     * Pre-fills the login form with default credentials or clears it when the panel
+     * is shown.
      */
     public void resetLoginForm() {
-        emailField.setText("");
-        passwordField.setText("");
+        // Pre-fill with the default user credentials
+        emailField.setText("user@user.com");
+        passwordField.setText("1234");
         errorMessageLabel.setText("");
     }
 }

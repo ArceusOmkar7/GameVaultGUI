@@ -8,9 +8,10 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
-public class GameStorage implements StorageInterface<Game, Integer>{
+public class GameStorage implements StorageInterface<Game, Integer> {
 
     @Override
     public Game findById(Integer gameId) {
@@ -35,10 +36,25 @@ public class GameStorage implements StorageInterface<Game, Integer>{
         }
     }
 
+    // Find all games owned by a specific user from completed orders
+    public List<Game> findOwnedGamesByUser(Integer userId) {
+        String sql = "SELECT DISTINCT g.* FROM Games g " +
+                "JOIN Transactions t ON g.gameId = t.orderId " +
+                "WHERE t.userId = ? AND t.transactionType = 'Purchase'";
+        try {
+            return DBUtil.executeQuery(sql, rs -> mapResultSetToGame(rs), userId);
+        } catch (SQLException | IOException e) {
+            System.err.println("Error finding owned games for user: " + e.getMessage());
+            e.printStackTrace(); // Add stack trace for better debugging
+            return new ArrayList<>();
+        }
+    }
+
     @Override
     public void save(Game game) {
         String sql = "INSERT INTO Games (title, description, developer, platform, price, releaseDate) VALUES (?, ?, ?, ?, ?, ?)";
-        try (ResultSet generatedKeys = DBUtil.executeInsert(sql, game.getTitle(), game.getDescription(), game.getDeveloper(), game.getPlatform(), game.getPrice(), new Date(game.getReleaseDate().getTime()))) {
+        try (ResultSet generatedKeys = DBUtil.executeInsert(sql, game.getTitle(), game.getDescription(),
+                game.getDeveloper(), game.getPlatform(), game.getPrice(), new Date(game.getReleaseDate().getTime()))) {
 
             if (generatedKeys.next()) {
                 game.setGameId(generatedKeys.getInt(1));
@@ -52,7 +68,8 @@ public class GameStorage implements StorageInterface<Game, Integer>{
     public void update(Game game) {
         String sql = "UPDATE Games SET title = ?, description = ?, developer = ?, platform = ?, price = ?, releaseDate = ? WHERE gameId = ?";
         try {
-            DBUtil.executeUpdate(sql, game.getTitle(), game.getDescription(), game.getDeveloper(), game.getPlatform(), game.getPrice(), new Date(game.getReleaseDate().getTime()), game.getGameId());
+            DBUtil.executeUpdate(sql, game.getTitle(), game.getDescription(), game.getDeveloper(), game.getPlatform(),
+                    game.getPrice(), new Date(game.getReleaseDate().getTime()), game.getGameId());
         } catch (SQLException | IOException e) {
             System.err.println("Error updating game: " + e.getMessage());
         }
@@ -76,7 +93,6 @@ public class GameStorage implements StorageInterface<Game, Integer>{
                 rs.getString("developer"),
                 rs.getString("platform"),
                 rs.getFloat("price"),
-                rs.getDate("releaseDate")
-        );
+                rs.getDate("releaseDate"));
     }
 }

@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import com.project.gamevaultcli.helpers.DBUtil;
 import java.sql.SQLException;
 import java.io.IOException;
+import java.util.List;
 
 public class GameVaultFrame extends JFrame {
 
@@ -372,13 +373,13 @@ public class GameVaultFrame extends JFrame {
                     userPanel.loadUserInfo(this.currentUser);
                 } else if ("Dashboard".equals(currentPanel)) {
                     dashboardPanel.loadDashboardData(this.currentUser.getUserId());
-                    // Note: Dashboard also loads orders/transactions, which might also be affected
-                    // by purchase
                 } else if ("Billing".equals(currentPanel)) {
                     billingPanel.loadBills(this.currentUser.getUserId());
+                } else {
+                    // For any other visible panel, still refresh owned games to keep them up to
+                    // date
+                    dashboardPanel.refreshOwnedGames(this.currentUser.getUserId());
                 }
-                // Cart doesn't need refresh after purchase as it clears anyway and is reloaded
-                // when shown.
 
                 // Update Navbar greeting (in case username changed, though not expected here)
                 updateUIState(currentPanel); // Refresh UI state for the current panel
@@ -399,7 +400,21 @@ public class GameVaultFrame extends JFrame {
         // currentUser,
         // but might still need to trigger dashboard refresh if admin actions affected
         // global stats.
-        // For now, refreshCurrentUserAndUI is only called after user actions.
+    }
+
+    /**
+     * Refreshes the game data on the dashboard.
+     * This should be called after any action that modifies games (add/edit/delete).
+     */
+    public void refreshGameData() {
+        String currentPanel = getCurrentPanelName();
+        if ("Dashboard".equals(currentPanel)) {
+            // If currently on dashboard, reload it immediately
+            dashboardPanel.loadDashboardData(currentUser != null ? currentUser.getUserId() : -1);
+        }
+        // We don't need an else clause here because when the user navigates back to the
+        // dashboard,
+        // showPanel method will call loadDashboardData
     }
 
     /**
@@ -632,49 +647,68 @@ public class GameVaultFrame extends JFrame {
         GameVaultManagement vaultManager = new GameVaultManagement(userManagement, gameManagement, orderManagement,
                 transactionManagement);
 
-        // Initialize predefined data *after* connection and storage are ready.
+        // Check if data initialization is needed (only initialize if users table is
+        // empty)
         try {
-            System.out.println("Initializing predefined data...");
+            boolean shouldInitializeData = false;
 
-            // Add default user with easy to remember credentials
             try {
-                User defaultUser = new User("user@example.com", "password123", "DefaultUser", 100.0f);
-                userManagement.addUser(defaultUser);
-                System.out.println("Added default user: " + defaultUser.getUsername());
+                // Check if there are any users in the database
+                List<User> existingUsers = userManagement.getAllUsers();
+                shouldInitializeData = (existingUsers == null || existingUsers.isEmpty());
+                System.out.println("Database check: " + (shouldInitializeData ? "Empty database, will initialize data."
+                        : "Data exists, skipping initialization."));
             } catch (Exception e) {
-                System.out.println("Default user may already exist: " + e.getMessage());
+                // If there's an error checking, we'll assume we need to initialize
+                System.out.println("Error checking database state: " + e.getMessage());
+                shouldInitializeData = true;
             }
 
-            // Add default games for testing
-            try {
-                Game game1 = new Game("Minecraft", "A sandbox building game", "Mojang", "PC/Mobile/Console", 29.99f,
-                        new java.util.Date());
-                gameManagement.addGame(game1);
+            if (shouldInitializeData) {
+                System.out.println("Initializing predefined data...");
 
-                Game game2 = new Game("FIFA 2025", "Latest soccer simulation", "EA Sports", "PC/Console", 59.99f,
-                        new java.util.Date());
-                gameManagement.addGame(game2);
+                // Add default user with updated credentials
+                try {
+                    User defaultUser = new User("user@user.com", "1234", "DefaultUser", 5000.0f);
+                    userManagement.addUser(defaultUser);
+                    System.out.println("Added default user: " + defaultUser.getUsername());
+                } catch (Exception e) {
+                    System.out.println("Error adding default user: " + e.getMessage());
+                }
 
-                Game game3 = new Game("Call of Duty: Modern Warfare", "FPS action game", "Activision", "PC/Console",
-                        49.99f, new java.util.Date());
-                gameManagement.addGame(game3);
+                // Add default games for testing
+                try {
+                    Game game1 = new Game("Minecraft", "A sandbox building game", "Mojang", "PC/Mobile/Console", 29.99f,
+                            new java.util.Date());
+                    gameManagement.addGame(game1);
 
-                Game game4 = new Game("The Legend of Zelda", "Action-adventure game", "Nintendo", "Switch", 59.99f,
-                        new java.util.Date());
-                gameManagement.addGame(game4);
+                    Game game2 = new Game("FIFA 2025", "Latest soccer simulation", "EA Sports", "PC/Console", 59.99f,
+                            new java.util.Date());
+                    gameManagement.addGame(game2);
 
-                Game game5 = new Game("Among Us", "Social deduction game", "InnerSloth", "PC/Mobile", 4.99f,
-                        new java.util.Date());
-                gameManagement.addGame(game5);
+                    Game game3 = new Game("Call of Duty: Modern Warfare", "FPS action game", "Activision", "PC/Console",
+                            49.99f, new java.util.Date());
+                    gameManagement.addGame(game3);
 
-                System.out.println("Added default games to the database");
-            } catch (Exception e) {
-                System.out.println("Some games may already exist: " + e.getMessage());
+                    Game game4 = new Game("The Legend of Zelda", "Action-adventure game", "Nintendo", "Switch", 59.99f,
+                            new java.util.Date());
+                    gameManagement.addGame(game4);
+
+                    Game game5 = new Game("Among Us", "Social deduction game", "InnerSloth", "PC/Mobile", 4.99f,
+                            new java.util.Date());
+                    gameManagement.addGame(game5);
+
+                    System.out.println("Added default games to the database");
+                } catch (Exception e) {
+                    System.out.println("Error adding default games: " + e.getMessage());
+                }
+
+                System.out.println("Predefined data initialized.");
+            } else {
+                System.out.println("Skipping data initialization as data already exists in the database.");
             }
-
-            System.out.println("Predefined data initialized.");
         } catch (Exception e) {
-            System.err.println("Error initializing predefined data: " + e.getMessage());
+            System.err.println("Error during data initialization check: " + e.getMessage());
             e.printStackTrace();
         }
 
