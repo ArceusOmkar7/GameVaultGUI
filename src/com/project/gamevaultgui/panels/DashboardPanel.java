@@ -1,4 +1,4 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels;
 
 import com.project.gamevaultcli.entities.Game;
 import com.project.gamevaultcli.entities.Order;
@@ -8,6 +8,7 @@ import com.project.gamevaultcli.management.GameManagement;
 import com.project.gamevaultcli.management.OrderManagement;
 import com.project.gamevaultcli.management.TransactionManagement;
 import com.project.gamevaultcli.management.UserManagement;
+import com.project.gamevaultgui.GameVaultFrame;
 import com.project.gamevaultcli.management.CartManagement;
 import com.project.gamevaultcli.exceptions.GameNotFoundException;
 

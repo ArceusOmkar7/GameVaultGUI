@@ -1,6 +1,9 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels;
 
 import javax.swing.*;
+
+import com.project.gamevaultgui.GameVaultFrame;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -41,7 +44,7 @@ public class NavbarPanel extends JPanel {
         pageTitleLabel = new JLabel("Welcome");
         pageTitleLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         pageTitleLabel.setHorizontalAlignment(SwingConstants.CENTER);
-         pageTitleLabel.setForeground(new Color(50, 50, 50));
+        pageTitleLabel.setForeground(new Color(50, 50, 50));
 
         JPanel userInfoPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 5));
         userInfoPanel.setOpaque(false);
@@ -74,7 +77,6 @@ public class NavbarPanel extends JPanel {
         userInfoPanel.add(greetingLabel);
         userInfoPanel.add(profileIconLabel);
 
-
         add(brandPanel, BorderLayout.WEST);
         add(pageTitleLabel, BorderLayout.CENTER);
         add(userInfoPanel, BorderLayout.EAST);
@@ -96,12 +98,11 @@ public class NavbarPanel extends JPanel {
         });
     }
 
-
     public void setGreeting(String greeting) {
         greetingLabel.setText(greeting);
     }
 
-     public void setPageTitle(String title) {
+    public void setPageTitle(String title) {
         pageTitleLabel.setText(title);
     }
 

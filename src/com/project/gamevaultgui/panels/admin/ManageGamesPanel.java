@@ -1,7 +1,9 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels.admin;
 
 import com.project.gamevaultcli.entities.Game;
 import com.project.gamevaultcli.management.GameManagement;
+import com.project.gamevaultgui.GameVaultFrame;
+import com.project.gamevaultgui.dialogs.GameFormDialog;
 import com.project.gamevaultcli.exceptions.GameNotFoundException;
 
 import javax.swing.*;

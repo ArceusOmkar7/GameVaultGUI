@@ -1,13 +1,15 @@
 
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels;
 
 import javax.swing.*;
+
+import com.project.gamevaultgui.GameVaultFrame;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-
 
 public class SidebarPanel extends JPanel {
 
@@ -30,7 +32,6 @@ public class SidebarPanel extends JPanel {
     private Color defaultFgColor = Color.WHITE;
     private Color selectedFgColor = Color.BLACK; // Black text for selected
 
-
     public SidebarPanel(GameVaultFrame parentFrame) {
         this.parentFrame = parentFrame;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -51,7 +52,7 @@ public class SidebarPanel extends JPanel {
         logoPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
         logoPanel.setBackground(new Color(75, 78, 80));
         logoPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-         logoPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        logoPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
         logoLabel = new JLabel("VG");
         logoLabel.setFont(new Font("Arial", Font.BOLD, 30));
@@ -63,7 +64,7 @@ public class SidebarPanel extends JPanel {
 
         logoPanel.add(logoLabel);
         logoPanel.add(titleLabel);
-         logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        logoPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         // Sidebar Buttons
         dashboardButton = createSidebarButton("Dashboard", null);
@@ -76,7 +77,7 @@ public class SidebarPanel extends JPanel {
         manageUsersButton = createSidebarButton("Manage Users", null);
     }
 
-     private JButton createSidebarButton(String text, Icon icon) {
+    private JButton createSidebarButton(String text, Icon icon) {
         JButton button = new JButton(text, icon);
         button.setAlignmentX(Component.CENTER_ALIGNMENT);
         button.setMaximumSize(new Dimension(Integer.MAX_VALUE, 45));
@@ -90,7 +91,6 @@ public class SidebarPanel extends JPanel {
         button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 10));
         button.setOpaque(true); // Ensure background is painted
 
-
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent evt) {
@@ -98,30 +98,31 @@ public class SidebarPanel extends JPanel {
                     button.setBackground(hoverBgColor);
                 }
             }
+
             @Override
             public void mouseExited(MouseEvent evt) {
-                 if (button != currentlySelectedButton) {
-                     button.setBackground(defaultBgColor);
-                 }
+                if (button != currentlySelectedButton) {
+                    button.setBackground(defaultBgColor);
+                }
             }
-             @Override
-             public void mousePressed(MouseEvent evt) {
-                  button.setBackground(hoverBgColor.darker());
-             }
-             @Override
-             public void mouseReleased(MouseEvent evt) {
-                 if (button != currentlySelectedButton) {
-                     button.setBackground(button.getModel().isRollover() ? hoverBgColor : defaultBgColor);
-                 } else {
-                     button.setBackground(selectedBgColor);
-                 }
-             }
-        });
 
+            @Override
+            public void mousePressed(MouseEvent evt) {
+                button.setBackground(hoverBgColor.darker());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent evt) {
+                if (button != currentlySelectedButton) {
+                    button.setBackground(button.getModel().isRollover() ? hoverBgColor : defaultBgColor);
+                } else {
+                    button.setBackground(selectedBgColor);
+                }
+            }
+        });
 
         return button;
     }
-
 
     private void addComponents() {
         add(logoPanel);
@@ -139,12 +140,12 @@ public class SidebarPanel extends JPanel {
 
         // Admin Buttons
         add(Box.createRigidArea(new Dimension(0, 15)));
-         JLabel adminLabel = new JLabel("Admin Tools:");
-         adminLabel.setForeground(defaultFgColor);
-         adminLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-         adminLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-         add(adminLabel);
-         add(Box.createRigidArea(new Dimension(0, 5)));
+        JLabel adminLabel = new JLabel("Admin Tools:");
+        adminLabel.setForeground(defaultFgColor);
+        adminLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        adminLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(adminLabel);
+        add(Box.createRigidArea(new Dimension(0, 5)));
         add(manageGamesButton);
         add(Box.createRigidArea(new Dimension(0, 3)));
         add(manageUsersButton);
@@ -159,19 +160,33 @@ public class SidebarPanel extends JPanel {
                 JButton source = (JButton) e.getSource();
                 // Map button text to the EXACT CardLayout key
                 String panelName;
-                switch(source.getText()) {
-                    case "Dashboard":       panelName = "Dashboard"; break;
-                    case "Cart":            panelName = "Cart"; break;
-                    case "Your Orders":     panelName = "Billing"; break; // Map "Your Orders" button to "Billing" panel key
-                    case "User Profile":    panelName = "User Profile"; break;
-                    case "Manage Games":    panelName = "Manage Games"; break;
-                    case "Manage Users":    panelName = "Manage Users"; break;
-                    default:                panelName = ""; break; // Should not happen
+                switch (source.getText()) {
+                    case "Dashboard":
+                        panelName = "Dashboard";
+                        break;
+                    case "Cart":
+                        panelName = "Cart";
+                        break;
+                    case "Your Orders":
+                        panelName = "Billing";
+                        break; // Map "Your Orders" button to "Billing" panel key
+                    case "User Profile":
+                        panelName = "User Profile";
+                        break;
+                    case "Manage Games":
+                        panelName = "Manage Games";
+                        break;
+                    case "Manage Users":
+                        panelName = "Manage Users";
+                        break;
+                    default:
+                        panelName = "";
+                        break; // Should not happen
                 }
-                 if (!panelName.isEmpty()) {
-                     parentFrame.showPanel(panelName);
-                     // Highlighting is handled by updateUIState in GameVaultFrame
-                 }
+                if (!panelName.isEmpty()) {
+                    parentFrame.showPanel(panelName);
+                    // Highlighting is handled by updateUIState in GameVaultFrame
+                }
             }
         };
 
@@ -190,22 +205,40 @@ public class SidebarPanel extends JPanel {
         currentlySelectedButton = button;
     }
 
-     public void resetButtonColors() {
-         JButton[] buttons = {dashboardButton, cartButton, yourOrdersButton, userButton, manageGamesButton, manageUsersButton}; // Include the new button
-         for (JButton button : buttons) {
-             button.setBackground(defaultBgColor);
-             button.setForeground(defaultFgColor);
-         }
-     }
+    public void resetButtonColors() {
+        JButton[] buttons = { dashboardButton, cartButton, yourOrdersButton, userButton, manageGamesButton,
+                manageUsersButton }; // Include the new button
+        for (JButton button : buttons) {
+            button.setBackground(defaultBgColor);
+            button.setForeground(defaultFgColor);
+        }
+    }
 
-    // Add specific highlight methods for GameVaultFrame to call (update method name)
-    public void highlightDashboardButton() { highlightButton(dashboardButton); }
-    public void highlightCartButton() { highlightButton(cartButton); }
-    public void highlightYourOrdersButton() { highlightButton(yourOrdersButton); } // Renamed highlight method
-    public void highlightUserButton() { highlightButton(userButton); }
-    public void highlightManageGamesButton() { highlightButton(manageGamesButton); }
-    public void highlightManageUsersButton() { highlightButton(manageUsersButton); }
+    // Add specific highlight methods for GameVaultFrame to call (update method
+    // name)
+    public void highlightDashboardButton() {
+        highlightButton(dashboardButton);
+    }
 
+    public void highlightCartButton() {
+        highlightButton(cartButton);
+    }
+
+    public void highlightYourOrdersButton() {
+        highlightButton(yourOrdersButton);
+    } // Renamed highlight method
+
+    public void highlightUserButton() {
+        highlightButton(userButton);
+    }
+
+    public void highlightManageGamesButton() {
+        highlightButton(manageGamesButton);
+    }
+
+    public void highlightManageUsersButton() {
+        highlightButton(manageUsersButton);
+    }
 
     // Method to update sidebar visibility for a user (update button reference)
     public void updateSidebarForUser() {
@@ -220,7 +253,7 @@ public class SidebarPanel extends JPanel {
         repaint();
     }
 
-     // Method to update sidebar visibility for an admin (update button reference)
+    // Method to update sidebar visibility for an admin (update button reference)
     public void updateSidebarForAdmin() {
         dashboardButton.setVisible(true);
         cartButton.setVisible(false);
@@ -233,12 +266,13 @@ public class SidebarPanel extends JPanel {
         repaint();
     }
 
-     public void hideAllButtons() {
-         JButton[] buttons = {dashboardButton, cartButton, yourOrdersButton, userButton, manageGamesButton, manageUsersButton}; // Include the new button
-         for (JButton button : buttons) {
-             button.setVisible(false);
-         }
-         revalidate();
-         repaint();
-     }
+    public void hideAllButtons() {
+        JButton[] buttons = { dashboardButton, cartButton, yourOrdersButton, userButton, manageGamesButton,
+                manageUsersButton }; // Include the new button
+        for (JButton button : buttons) {
+            button.setVisible(false);
+        }
+        revalidate();
+        repaint();
+    }
 }

@@ -1,4 +1,4 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels.admin;
 
 import com.project.gamevaultcli.entities.User;
 import com.project.gamevaultcli.management.UserManagement;

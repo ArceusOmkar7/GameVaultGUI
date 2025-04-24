@@ -1,7 +1,8 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels.user;
 
 import com.project.gamevaultcli.entities.User;
 import com.project.gamevaultcli.management.UserManagement; // Import UserManagement
+import com.project.gamevaultgui.GameVaultFrame;
 import com.project.gamevaultcli.management.TransactionManagement; // Import TransactionManagement
 
 import javax.swing.*;
@@ -14,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.time.LocalDateTime; // Import LocalDateTime
 import com.project.gamevaultcli.entities.Transaction; // Import Transaction
-
 
 public class UserPanel extends JPanel {
 
@@ -37,15 +37,14 @@ public class UserPanel extends JPanel {
     private final UserManagement userManagement;
     private final TransactionManagement transactionManagement;
 
-
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
     // Accept management classes in constructor
-    public UserPanel(GameVaultFrame parentFrame, UserManagement userManagement, TransactionManagement transactionManagement) {
+    public UserPanel(GameVaultFrame parentFrame, UserManagement userManagement,
+            TransactionManagement transactionManagement) {
         this.parentFrame = parentFrame;
         this.userManagement = userManagement;
         this.transactionManagement = transactionManagement;
-
 
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createCompoundBorder(
@@ -56,9 +55,7 @@ public class UserPanel extends JPanel {
                         TitledBorder.CENTER,
                         TitledBorder.TOP,
                         new Font("SansSerif", Font.BOLD, 20),
-                        new Color(60, 63, 65)
-                )
-        ));
+                        new Color(60, 63, 65))));
         setBackground(new Color(250, 250, 250));
 
         initComponents();
@@ -84,16 +81,23 @@ public class UserPanel extends JPanel {
         Color keyColor = new Color(80, 80, 80);
         Color valueColor = new Color(0, 0, 0);
 
-        usernameKeyLabel.setFont(keyFont); usernameKeyLabel.setForeground(keyColor);
-        emailKeyLabel.setFont(keyFont); emailKeyLabel.setForeground(keyColor);
-        walletBalanceKeyLabel.setFont(keyFont); walletBalanceKeyLabel.setForeground(keyColor);
-        createdAtKeyLabel.setFont(keyFont); createdAtKeyLabel.setForeground(keyColor);
+        usernameKeyLabel.setFont(keyFont);
+        usernameKeyLabel.setForeground(keyColor);
+        emailKeyLabel.setFont(keyFont);
+        emailKeyLabel.setForeground(keyColor);
+        walletBalanceKeyLabel.setFont(keyFont);
+        walletBalanceKeyLabel.setForeground(keyColor);
+        createdAtKeyLabel.setFont(keyFont);
+        createdAtKeyLabel.setForeground(keyColor);
 
-        usernameValueLabel.setFont(valueFont); usernameValueLabel.setForeground(valueColor);
-        emailValueLabel.setFont(valueFont); emailValueLabel.setForeground(valueColor);
-        walletBalanceValueLabel.setFont(valueFont); walletBalanceValueLabel.setForeground(valueColor);
-        createdAtValueLabel.setFont(valueFont); createdAtValueLabel.setForeground(valueColor);
-
+        usernameValueLabel.setFont(valueFont);
+        usernameValueLabel.setForeground(valueColor);
+        emailValueLabel.setFont(valueFont);
+        emailValueLabel.setForeground(valueColor);
+        walletBalanceValueLabel.setFont(valueFont);
+        walletBalanceValueLabel.setForeground(valueColor);
+        createdAtValueLabel.setFont(valueFont);
+        createdAtValueLabel.setForeground(valueColor);
 
         editButton = new JButton("Edit Username");
         logoutButton = new JButton("Logout");
@@ -104,7 +108,7 @@ public class UserPanel extends JPanel {
         styleButton(addBalanceButton, new Color(40, 167, 69), Color.WHITE); // Green for Add Balance
     }
 
-     private void styleButton(JButton button, Color bgColor, Color fgColor) {
+    private void styleButton(JButton button, Color bgColor, Color fgColor) {
         button.setBackground(bgColor);
         button.setForeground(fgColor);
         button.setFont(new Font("SansSerif", Font.BOLD, 14));
@@ -115,13 +119,27 @@ public class UserPanel extends JPanel {
 
         Color hoverColor = bgColor.darker();
         button.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) { button.setBackground(hoverColor); }
-            @Override public void mouseExited(MouseEvent e) { button.setBackground(bgColor); }
-             @Override public void mousePressed(MouseEvent evt) { button.setBackground(hoverColor.darker()); }
-             @Override public void mouseReleased(MouseEvent evt) { button.setBackground(button.getModel().isRollover() ? hoverColor : bgColor); }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                button.setBackground(hoverColor);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                button.setBackground(bgColor);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent evt) {
+                button.setBackground(hoverColor.darker());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent evt) {
+                button.setBackground(button.getModel().isRollover() ? hoverColor : bgColor);
+            }
         });
     }
-
 
     private void addComponents() {
         GridBagConstraints gbc = new GridBagConstraints();
@@ -145,23 +163,30 @@ public class UserPanel extends JPanel {
                     g2d.setColor(Color.DARK_GRAY);
                     g2d.setFont(new Font("Arial", Font.BOLD, 36));
                     String initial = "U";
-                    if (parentFrame.getCurrentUser().getUsername() != null && !parentFrame.getCurrentUser().getUsername().isEmpty()) {
-                         initial = parentFrame.getCurrentUser().getUsername().substring(0, 1).toUpperCase();
+                    if (parentFrame.getCurrentUser().getUsername() != null
+                            && !parentFrame.getCurrentUser().getUsername().isEmpty()) {
+                        initial = parentFrame.getCurrentUser().getUsername().substring(0, 1).toUpperCase();
                     }
-                     FontMetrics fm = g2d.getFontMetrics();
-                     int stringWidth = fm.stringWidth(initial);
-                     int stringHeight = fm.getAscent() - fm.getLeading() - fm.getDescent();
-                     int textX = x + (diameter - stringWidth) / 2;
-                     int textY = y + (diameter + stringHeight) / 2;
-                     g2d.drawString(initial, textX, textY);
+                    FontMetrics fm = g2d.getFontMetrics();
+                    int stringWidth = fm.stringWidth(initial);
+                    int stringHeight = fm.getAscent() - fm.getLeading() - fm.getDescent();
+                    int textX = x + (diameter - stringWidth) / 2;
+                    int textY = y + (diameter + stringHeight) / 2;
+                    g2d.drawString(initial, textX, textY);
 
                     g2d.dispose();
                 }
             }
-             @Override
-            public Dimension getPreferredSize() { return new Dimension(70, 70); }
-             @Override
-            public Dimension getMaximumSize() { return getPreferredSize(); }
+
+            @Override
+            public Dimension getPreferredSize() {
+                return new Dimension(70, 70);
+            }
+
+            @Override
+            public Dimension getMaximumSize() {
+                return getPreferredSize();
+            }
         };
         profilePicPanel.setOpaque(false);
 
@@ -180,27 +205,51 @@ public class UserPanel extends JPanel {
         gbc.insets = new Insets(4, 15, 4, 15); // Smaller padding
 
         // Username Row
-        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         add(usernameKeyLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 1; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         add(usernameValueLabel, gbc);
 
         // Email Row
-        gbc.gridx = 0; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         add(emailKeyLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         add(emailValueLabel, gbc);
 
         // Wallet Balance Row
-        gbc.gridx = 0; gbc.gridy = 3; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         add(walletBalanceKeyLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 3; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         add(walletBalanceValueLabel, gbc);
 
         // Member Since Row
-        gbc.gridx = 0; gbc.gridy = 4; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         add(createdAtKeyLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 4; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         add(createdAtValueLabel, gbc);
 
         // --- Button Panel ---
@@ -209,7 +258,6 @@ public class UserPanel extends JPanel {
         buttonPanel.add(editButton);
         buttonPanel.add(addBalanceButton); // Add the new button
         buttonPanel.add(logoutButton);
-
 
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -235,20 +283,19 @@ public class UserPanel extends JPanel {
     }
 
     private void setLoggedInState(boolean isLoggedIn) {
-         usernameKeyLabel.setVisible(isLoggedIn);
-         emailKeyLabel.setVisible(isLoggedIn);
-         walletBalanceKeyLabel.setVisible(isLoggedIn);
-         createdAtKeyLabel.setVisible(isLoggedIn);
-         usernameValueLabel.setVisible(isLoggedIn);
-         emailValueLabel.setVisible(isLoggedIn);
-         walletBalanceValueLabel.setVisible(isLoggedIn);
-         createdAtValueLabel.setVisible(isLoggedIn);
-         editButton.setVisible(isLoggedIn);
-         logoutButton.setVisible(isLoggedIn);
-         addBalanceButton.setVisible(isLoggedIn); // Control visibility of add balance button
-         repaint();
+        usernameKeyLabel.setVisible(isLoggedIn);
+        emailKeyLabel.setVisible(isLoggedIn);
+        walletBalanceKeyLabel.setVisible(isLoggedIn);
+        createdAtKeyLabel.setVisible(isLoggedIn);
+        usernameValueLabel.setVisible(isLoggedIn);
+        emailValueLabel.setVisible(isLoggedIn);
+        walletBalanceValueLabel.setVisible(isLoggedIn);
+        createdAtValueLabel.setVisible(isLoggedIn);
+        editButton.setVisible(isLoggedIn);
+        logoutButton.setVisible(isLoggedIn);
+        addBalanceButton.setVisible(isLoggedIn); // Control visibility of add balance button
+        repaint();
     }
-
 
     /**
      * Loads and displays the user information on the panel.
@@ -261,13 +308,13 @@ public class UserPanel extends JPanel {
             usernameValueLabel.setText(user.getUsername());
             emailValueLabel.setText(user.getEmail());
             walletBalanceValueLabel.setText(String.format("$%.2f", user.getWalletBalance()));
-             Date createdAtDate = user.getCreatedAt();
-             if (createdAtDate != null) {
+            Date createdAtDate = user.getCreatedAt();
+            if (createdAtDate != null) {
                 createdAtValueLabel.setText(DATE_FORMAT.format(createdAtDate));
-             } else {
+            } else {
                 createdAtValueLabel.setText("N/A");
-             }
-             setLoggedInState(true);
+            }
+            setLoggedInState(true);
         } else {
             usernameValueLabel.setText("");
             emailValueLabel.setText("");
@@ -275,8 +322,8 @@ public class UserPanel extends JPanel {
             createdAtValueLabel.setText("");
             setLoggedInState(false);
         }
-         revalidate();
-         repaint();
+        revalidate();
+        repaint();
     }
 
     private void showEditUsernameDialog() {
@@ -299,7 +346,8 @@ public class UserPanel extends JPanel {
         if (result == JOptionPane.OK_OPTION) {
             String newUsername = usernameField.getText().trim();
             if (newUsername.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Username cannot be empty.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Username cannot be empty.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
             } else if (!newUsername.equals(currentUsername)) {
                 // Call parent frame to handle the update logic
                 parentFrame.updateCurrentUserUsername(newUsername);
@@ -315,21 +363,24 @@ public class UserPanel extends JPanel {
         }
 
         // Prompt user for the amount
-        String amountStr = JOptionPane.showInputDialog(this, "Enter amount to add to wallet:", "Add Balance", JOptionPane.PLAIN_MESSAGE);
+        String amountStr = JOptionPane.showInputDialog(this, "Enter amount to add to wallet:", "Add Balance",
+                JOptionPane.PLAIN_MESSAGE);
 
         if (amountStr != null) { // Check if user didn't cancel
             try {
                 float amount = Float.parseFloat(amountStr.trim());
 
                 if (amount <= 0) {
-                    JOptionPane.showMessageDialog(this, "Please enter a positive amount.", "Invalid Amount", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(this, "Please enter a positive amount.", "Invalid Amount",
+                            JOptionPane.WARNING_MESSAGE);
                 } else {
                     // Call parent frame to handle the balance update logic
                     parentFrame.addBalanceToCurrentUser(amount);
                 }
 
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.", "Invalid Amount", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Invalid input. Please enter a valid number.", "Invalid Amount",
+                        JOptionPane.WARNING_MESSAGE);
             }
         }
     }

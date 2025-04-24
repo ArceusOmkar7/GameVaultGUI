@@ -1,4 +1,4 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels.user;
 
 import com.project.gamevaultcli.entities.Game;
 import com.project.gamevaultcli.entities.Order;
@@ -6,6 +6,7 @@ import com.project.gamevaultcli.entities.Transaction;
 import com.project.gamevaultcli.management.GameManagement;
 import com.project.gamevaultcli.management.OrderManagement;
 import com.project.gamevaultcli.management.TransactionManagement;
+import com.project.gamevaultgui.GameVaultFrame;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder; // Import TitledBorder

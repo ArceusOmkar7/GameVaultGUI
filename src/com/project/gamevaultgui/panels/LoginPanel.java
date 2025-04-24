@@ -1,7 +1,10 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
+import com.project.gamevaultgui.GameVaultFrame;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

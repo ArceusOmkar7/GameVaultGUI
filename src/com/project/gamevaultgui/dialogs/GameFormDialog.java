@@ -1,4 +1,4 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.dialogs;
 
 import com.project.gamevaultcli.entities.Game;
 import com.project.gamevaultcli.management.GameManagement;
@@ -13,7 +13,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
-
 
 public class GameFormDialog extends JDialog {
 
@@ -32,10 +31,9 @@ public class GameFormDialog extends JDialog {
     private boolean saved = false; // Flag to indicate if changes were saved
     private boolean isEditing = false; // Flag to indicate if we are editing
 
-
-    // Use SimpleDateFormat with the correct format pattern (DD should be dd for day)
+    // Use SimpleDateFormat with the correct format pattern (DD should be dd for
+    // day)
     private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
 
     // Constructor for adding a new game
     public GameFormDialog(Frame owner, GameManagement gameManagement) {
@@ -62,7 +60,6 @@ public class GameFormDialog extends JDialog {
         setLocationRelativeTo(owner);
     }
 
-
     private void initComponents() {
         // Form Fields
         idField = new JTextField(); // Hidden ID field
@@ -75,16 +72,15 @@ public class GameFormDialog extends JDialog {
         priceField = new JTextField(10);
         releaseDateField = new JTextField(12); // YYYY-MM-DD format
 
-
         saveButton = new JButton("Save");
         cancelButton = new JButton("Cancel");
 
         // Style buttons
-         styleButton(saveButton, new Color(40, 167, 69), Color.WHITE); // Green
-         styleButton(cancelButton, new Color(108, 117, 125), Color.WHITE); // Gray
+        styleButton(saveButton, new Color(40, 167, 69), Color.WHITE); // Green
+        styleButton(cancelButton, new Color(108, 117, 125), Color.WHITE); // Gray
     }
 
-     private void styleButton(JButton button, Color bgColor, Color fgColor) {
+    private void styleButton(JButton button, Color bgColor, Color fgColor) {
         button.setBackground(bgColor);
         button.setForeground(fgColor);
         button.setFont(new Font("SansSerif", Font.BOLD, 12));
@@ -95,22 +91,31 @@ public class GameFormDialog extends JDialog {
 
         Color hoverColor = bgColor.darker();
         button.addMouseListener(new MouseAdapter() {
-            @Override public void mouseEntered(MouseEvent e) {
-                if (button.isEnabled()) button.setBackground(hoverColor);
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                if (button.isEnabled())
+                    button.setBackground(hoverColor);
             }
-            @Override public void mouseExited(MouseEvent e) {
-                if (button.isEnabled()) button.setBackground(bgColor);
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                if (button.isEnabled())
+                    button.setBackground(bgColor);
             }
-             @Override public void mousePressed(MouseEvent evt) {
-                 if (button.isEnabled()) button.setBackground(hoverColor.darker());
-             }
-             @Override
-             public void mouseReleased(MouseEvent evt) {
-                 if (button.isEnabled()) button.setBackground(button.getModel().isRollover() ? hoverColor : bgColor);
-             }
+
+            @Override
+            public void mousePressed(MouseEvent evt) {
+                if (button.isEnabled())
+                    button.setBackground(hoverColor.darker());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent evt) {
+                if (button.isEnabled())
+                    button.setBackground(button.getModel().isRollover() ? hoverColor : bgColor);
+            }
         }); // <-- Semicolon added here
     }
-
 
     private void addComponents() {
         JPanel formPanel = new JPanel(new GridBagLayout()); // Use GridBagLayout for the form layout
@@ -125,36 +130,60 @@ public class GameFormDialog extends JDialog {
 
         int row = 0;
         // ID (hidden) - added to layout but invisible
-        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 2; formPanel.add(idField, gbc); // Add hidden ID field
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 2;
+        formPanel.add(idField, gbc); // Add hidden ID field
         row++; // Move to next row (even though ID is hidden, it occupies a space)
 
         // Title Row
-        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.EAST;
         formPanel.add(new JLabel("Title:"), gbc);
-        gbc.gridx = 1; gbc.gridy = row; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(titleField, gbc);
         row++;
 
         // Description Row
-        gbc.gridx = 0; gbc.gridy = row; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         formPanel.add(new JLabel("Description:"), gbc);
-        gbc.gridx = 1; gbc.gridy = row; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(descriptionField, gbc);
         row++;
 
         // Developer and Platform on the same row
-        JPanel devPlatformPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0)); // FlowLayout for fields side-by-side
+        JPanel devPlatformPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0)); // FlowLayout for fields
+                                                                                      // side-by-side
         devPlatformPanel.setOpaque(false);
         devPlatformPanel.add(developerField);
         devPlatformPanel.add(platformField);
         // Labels for Dev and Platform
-        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.EAST;
         JPanel devPlatformLabelPanel = new JPanel(new GridLayout(1, 2, 5, 0)); // Panel for labels
         devPlatformLabelPanel.setOpaque(false);
         devPlatformLabelPanel.add(new JLabel("Developer:"));
         devPlatformLabelPanel.add(new JLabel("Platform:"));
         formPanel.add(devPlatformLabelPanel, gbc);
-        gbc.gridx = 1; gbc.gridy = row; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(devPlatformPanel, gbc);
         row++;
 
@@ -164,21 +193,30 @@ public class GameFormDialog extends JDialog {
         priceDatePanel.add(priceField);
         priceDatePanel.add(releaseDateField);
         // Labels for Price and Release Date
-        gbc.gridx = 0; gbc.gridy = row; gbc.gridwidth = 1; gbc.weightx = 0; gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0;
+        gbc.anchor = GridBagConstraints.EAST;
         JPanel priceDateLabelPanel = new JPanel(new GridLayout(1, 2, 5, 0)); // Panel for labels
         priceDateLabelPanel.setOpaque(false);
         priceDateLabelPanel.add(new JLabel("Price:"));
         priceDateLabelPanel.add(new JLabel("Release Date:"));
         formPanel.add(priceDateLabelPanel, gbc);
-        gbc.gridx = 1; gbc.gridy = row; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = row;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(priceDatePanel, gbc);
         row++;
 
-
         // Add vertical glue to push elements to the top
-        gbc.gridx = 0; gbc.gridy = row; gbc.weighty = 1.0; gbc.gridwidth = 2; gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+        gbc.gridy = row;
+        gbc.weighty = 1.0;
+        gbc.gridwidth = 2;
+        gbc.fill = GridBagConstraints.BOTH;
         formPanel.add(Box.createVerticalGlue(), gbc);
-
 
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
@@ -198,6 +236,7 @@ public class GameFormDialog extends JDialog {
 
     /**
      * Populates the form fields with data from a Game object when editing.
+     * 
      * @param game The Game object to populate from.
      */
     private void populateForm(Game game) {
@@ -223,8 +262,10 @@ public class GameFormDialog extends JDialog {
         String priceText = priceField.getText().trim();
         String releaseDateText = releaseDateField.getText().trim();
 
-        if (title.isEmpty() || developer.isEmpty() || platform.isEmpty() || priceText.isEmpty() || releaseDateText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+        if (title.isEmpty() || developer.isEmpty() || platform.isEmpty() || priceText.isEmpty()
+                || releaseDateText.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Please fill in all required fields.", "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -232,11 +273,13 @@ public class GameFormDialog extends JDialog {
         try {
             price = Float.parseFloat(priceText);
             if (price < 0) {
-                JOptionPane.showMessageDialog(this, "Price must be a positive number.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Price must be a positive number.", "Validation Error",
+                        JOptionPane.WARNING_MESSAGE);
                 return;
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Invalid price format. Please enter a number.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid price format. Please enter a number.", "Validation Error",
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -244,7 +287,8 @@ public class GameFormDialog extends JDialog {
         try {
             releaseDate = DATE_FORMAT.parse(releaseDateText);
         } catch (ParseException e) {
-            JOptionPane.showMessageDialog(this, "Invalid release date format. Please use YYYY-MM-DD.", "Validation Error", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid release date format. Please use YYYY-MM-DD.",
+                    "Validation Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -255,23 +299,29 @@ public class GameFormDialog extends JDialog {
                 int gameId = Integer.parseInt(idField.getText()); // Get the ID from the hidden field
                 game = new Game(gameId, title, description, developer, platform, price, releaseDate);
                 gameManagement.updateGame(game);
-                // JOptionPane.showMessageDialog(this, "Game updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE); // Success message shown on panel after dialog closes
+                // JOptionPane.showMessageDialog(this, "Game updated successfully!", "Success",
+                // JOptionPane.INFORMATION_MESSAGE); // Success message shown on panel after
+                // dialog closes
             } else {
                 // --- Add New Game ---
                 game = new Game(title, description, developer, platform, price, releaseDate);
                 gameManagement.addGame(game); // The addGame method should set the new ID on the game object
-                // JOptionPane.showMessageDialog(this, "Game added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE); // Success message shown on panel after dialog closes
+                // JOptionPane.showMessageDialog(this, "Game added successfully!", "Success",
+                // JOptionPane.INFORMATION_MESSAGE); // Success message shown on panel after
+                // dialog closes
             }
 
             saved = true; // Set flag to true on successful save/add
             dispose(); // Close the dialog
 
         } catch (NumberFormatException e) {
-             // Should only happen if idField is somehow non-integer in edit mode
-             JOptionPane.showMessageDialog(this, "Internal Error: Invalid Game ID format.", "Internal Error", JOptionPane.ERROR_MESSAGE);
+            // Should only happen if idField is somehow non-integer in edit mode
+            JOptionPane.showMessageDialog(this, "Internal Error: Invalid Game ID format.", "Internal Error",
+                    JOptionPane.ERROR_MESSAGE);
         } catch (Exception e) {
             // Catch any other exceptions from the management/storage layer
-            JOptionPane.showMessageDialog(this, "Error saving game: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error saving game: " + e.getMessage(), "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }
@@ -286,7 +336,9 @@ public class GameFormDialog extends JDialog {
 
     /**
      * Returns whether the dialog was saved successfully.
-     * Used by the calling panel (ManageGamesPanel) to know if the table needs refreshing.
+     * Used by the calling panel (ManageGamesPanel) to know if the table needs
+     * refreshing.
+     * 
      * @return true if saved, false otherwise.
      */
     public boolean wasSaved() {

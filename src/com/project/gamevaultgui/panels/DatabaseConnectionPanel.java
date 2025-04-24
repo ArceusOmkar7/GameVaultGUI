@@ -1,6 +1,7 @@
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels;
 
 import com.project.gamevaultcli.helpers.DBUtil;
+import com.project.gamevaultgui.GameVaultFrame;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

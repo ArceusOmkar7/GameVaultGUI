@@ -1,8 +1,9 @@
 
-package com.project.gamevaultgui;
+package com.project.gamevaultgui.panels;
 
 import com.project.gamevaultcli.entities.User;
 import com.project.gamevaultcli.exceptions.InvalidUserDataException;
+import com.project.gamevaultgui.GameVaultFrame;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -66,7 +67,6 @@ public class SignupPanel extends JPanel {
         passwordField.setFont(fieldFont);
         confirmPasswordField.setFont(fieldFont);
 
-
         signupButton.setFont(new Font("SansSerif", Font.BOLD, 14));
         signupButton.setBackground(new Color(40, 167, 69)); // Bootstrap-like green
         signupButton.setForeground(Color.WHITE);
@@ -74,21 +74,27 @@ public class SignupPanel extends JPanel {
         signupButton.setBorder(BorderFactory.createEmptyBorder(8, 20, 8, 20));
         signupButton.setOpaque(true);
 
-         // Button Hover Effect
-         Color signupBtnBg = new Color(40, 167, 69);
-         Color signupBtnHover = signupBtnBg.darker();
-         signupButton.addMouseListener(new MouseAdapter() {
-             @Override public void mouseEntered(MouseEvent e) { signupButton.setBackground(signupBtnHover); }
-             @Override public void mouseExited(MouseEvent e) { signupButton.setBackground(signupBtnBg); }
-         });
+        // Button Hover Effect
+        Color signupBtnBg = new Color(40, 167, 69);
+        Color signupBtnHover = signupBtnBg.darker();
+        signupButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                signupButton.setBackground(signupBtnHover);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                signupButton.setBackground(signupBtnBg);
+            }
+        });
     }
 
     private void addComponents() {
         JPanel formPanel = new JPanel(new GridBagLayout());
         formPanel.setBorder(BorderFactory.createCompoundBorder(
-             BorderFactory.createLineBorder(new Color(150, 150, 150), 1),
-             BorderFactory.createEmptyBorder(30, 30, 30, 30)
-        ));
+                BorderFactory.createLineBorder(new Color(150, 150, 150), 1),
+                BorderFactory.createEmptyBorder(30, 30, 30, 30)));
         formPanel.setBackground(Color.WHITE);
 
         GridBagConstraints gbc = new GridBagConstraints();
@@ -109,41 +115,82 @@ public class SignupPanel extends JPanel {
         formPanel.add(titleLabel, gbc);
 
         // Email Row
-        gbc.gridx = 0; gbc.gridy = 1; gbc.gridwidth = 1; gbc.anchor = GridBagConstraints.EAST; gbc.insets = new Insets(5, 5, 5, 5); gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.weightx = 0;
         formPanel.add(new JLabel("Email:"), gbc);
-        gbc.gridx = 1; gbc.gridy = 1; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(emailField, gbc);
 
         // Username Row
-        gbc.gridx = 0; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         formPanel.add(new JLabel("Username:"), gbc);
-        gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(usernameField, gbc);
 
         // Password Row
-        gbc.gridx = 0; gbc.gridy = 3; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         formPanel.add(new JLabel("Password:"), gbc);
-        gbc.gridx = 1; gbc.gridy = 3; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(passwordField, gbc);
 
         // Confirm Password Row
-        gbc.gridx = 0; gbc.gridy = 4; gbc.anchor = GridBagConstraints.EAST; gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.EAST;
+        gbc.weightx = 0;
         formPanel.add(new JLabel("Confirm Password:"), gbc);
-        gbc.gridx = 1; gbc.gridy = 4; gbc.anchor = GridBagConstraints.WEST; gbc.weightx = 1.0;
+        gbc.gridx = 1;
+        gbc.gridy = 4;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.weightx = 1.0;
         formPanel.add(confirmPasswordField, gbc);
 
         // Error Message Label
-        gbc.gridx = 0; gbc.gridy = 5; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER; gbc.insets = new Insets(10, 0, 10, 0); gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.weightx = 0;
         formPanel.add(errorMessageLabel, gbc);
 
         // Signup Button
-        gbc.gridx = 0; gbc.gridy = 6; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER; gbc.fill = GridBagConstraints.NONE; gbc.insets = new Insets(10, 0, 10, 0); gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.insets = new Insets(10, 0, 10, 0);
+        gbc.weightx = 0;
         formPanel.add(signupButton, gbc);
 
         // Login Link
-        gbc.gridx = 0; gbc.gridy = 7; gbc.gridwidth = 2; gbc.anchor = GridBagConstraints.CENTER; gbc.insets = new Insets(10, 0, 0, 0); gbc.weightx = 0;
+        gbc.gridx = 0;
+        gbc.gridy = 7;
+        gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.insets = new Insets(10, 0, 0, 0);
+        gbc.weightx = 0;
         formPanel.add(loginLink, gbc);
-
 
         // Add the form panel to the main SignupPanel for centering
         GridBagConstraints mainGbc = new GridBagConstraints();
@@ -159,12 +206,12 @@ public class SignupPanel extends JPanel {
     private void setupEventHandlers() {
         signupButton.addActionListener(e -> performSignup());
 
-        // Allow pressing Enter on any text field to trigger signup (optional, can limit to last field)
+        // Allow pressing Enter on any text field to trigger signup (optional, can limit
+        // to last field)
         emailField.addActionListener(e -> performSignup());
         usernameField.addActionListener(e -> performSignup());
         passwordField.addActionListener(e -> performSignup());
         confirmPasswordField.addActionListener(e -> performSignup());
-
 
         // Add MouseListener to the loginLink label
         loginLink.addMouseListener(new MouseAdapter() {
@@ -192,28 +239,32 @@ public class SignupPanel extends JPanel {
             errorMessageLabel.setText("Passwords do not match.");
             return;
         }
-         // Optional: Add more validation (email format, username length, etc.)
+        // Optional: Add more validation (email format, username length, etc.)
 
         try {
-            // Create a new user object (initial wallet balance could be 0.0f or user-defined)
+            // Create a new user object (initial wallet balance could be 0.0f or
+            // user-defined)
             User newUser = new User(email, password, username, 0.0f); // Start with $0 wallet
 
             // Call UserManagement to add the user (handles DB insertion)
             parentFrame.getUserManagement().addUser(newUser);
 
             // Signup successful
-            JOptionPane.showMessageDialog(this, "Account created successfully!\nYou can now log in.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Account created successfully!\nYou can now log in.", "Success",
+                    JOptionPane.INFORMATION_MESSAGE);
 
             // Redirect to the login page
             parentFrame.showPanel("Login");
 
         } catch (InvalidUserDataException e) {
-            // Handle validation errors from the management layer (e.g., username already exists)
+            // Handle validation errors from the management layer (e.g., username already
+            // exists)
             errorMessageLabel.setText("Signup failed: " + e.getMessage());
-             // Optional: Log the full exception server-side or to a file
+            // Optional: Log the full exception server-side or to a file
         } catch (Exception e) {
             // Handle other potential errors (e.g., database connection issues)
-            JOptionPane.showMessageDialog(this, "An error occurred during signup: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "An error occurred during signup: " + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
             e.printStackTrace(); // Print stack trace for debugging
             errorMessageLabel.setText("An unexpected error occurred."); // Generic error for the user
         }
