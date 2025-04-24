@@ -100,6 +100,9 @@ public class GameVaultFrame extends JFrame {
         cardLayout = new CardLayout();
         centerPanel.setLayout(cardLayout);
 
+        // Create the database connection panel
+        JPanel dbConnectionPanel = new DatabaseConnectionPanel(this);
+
         dashboardPanel = new DashboardPanel(userManagement, gameManagement, orderManagement, transactionManagement,
                 cartManagement, this);
         cartPanel = new CartPanel(cartManagement, gameManagement, this);
@@ -120,6 +123,7 @@ public class GameVaultFrame extends JFrame {
         add(centerPanel, BorderLayout.CENTER);
 
         // Add all panels to the CardLayout using their unique keys
+        centerPanel.add(new DatabaseConnectionPanel(this), "DatabaseConnection");
         centerPanel.add(roleSelectionPanel, "RoleSelection");
         centerPanel.add(loginPanel, "Login");
         centerPanel.add(signupPanel, "Signup");
@@ -546,6 +550,10 @@ public class GameVaultFrame extends JFrame {
         return transactionManagement;
     }
 
+    public GameVaultManagement getGameVaultManagement() {
+        return gameVaultManagement;
+    }
+
     private JPanel createRoleSelectionPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBackground(new Color(230, 235, 240));
@@ -613,22 +621,6 @@ public class GameVaultFrame extends JFrame {
     }
 
     public static void main(String[] args) {
-        // --- FORCE DATABASE CONNECTION AT THE VERY START ---
-        try {
-            System.out.println("Attempting to establish database connection...");
-            DBUtil.getConnection();
-            System.out.println("Database connection established successfully.");
-
-        } catch (SQLException | IOException e) {
-            System.err.println("Failed to establish initial database connection.");
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null,
-                    "Failed to connect to the database.\nPlease check connection details and ensure MySQL is running.\nError: "
-                            + e.getMessage(),
-                    "Database Connection Error", JOptionPane.ERROR_MESSAGE);
-            System.exit(1);
-        }
-
         // Initialize management classes
         com.project.gamevaultcli.storage.UserStorage userStorage = new com.project.gamevaultcli.storage.UserStorage();
         com.project.gamevaultcli.storage.GameStorage gameStorage = new com.project.gamevaultcli.storage.GameStorage();
@@ -647,74 +639,14 @@ public class GameVaultFrame extends JFrame {
         GameVaultManagement vaultManager = new GameVaultManagement(userManagement, gameManagement, orderManagement,
                 transactionManagement);
 
-        // Check if data initialization is needed (only initialize if users table is
-        // empty)
-        try {
-            boolean shouldInitializeData = false;
-
-            try {
-                // Check if there are any users in the database
-                List<User> existingUsers = userManagement.getAllUsers();
-                shouldInitializeData = (existingUsers == null || existingUsers.isEmpty());
-                System.out.println("Database check: " + (shouldInitializeData ? "Empty database, will initialize data."
-                        : "Data exists, skipping initialization."));
-            } catch (Exception e) {
-                // If there's an error checking, we'll assume we need to initialize
-                System.out.println("Error checking database state: " + e.getMessage());
-                shouldInitializeData = true;
-            }
-
-            if (shouldInitializeData) {
-                System.out.println("Initializing predefined data...");
-
-                // Add default user with updated credentials
-                try {
-                    User defaultUser = new User("user@user.com", "1234", "DefaultUser", 5000.0f);
-                    userManagement.addUser(defaultUser);
-                    System.out.println("Added default user: " + defaultUser.getUsername());
-                } catch (Exception e) {
-                    System.out.println("Error adding default user: " + e.getMessage());
-                }
-
-                // Add default games for testing
-                try {
-                    Game game1 = new Game("Minecraft", "A sandbox building game", "Mojang", "PC/Mobile/Console", 29.99f,
-                            new java.util.Date());
-                    gameManagement.addGame(game1);
-
-                    Game game2 = new Game("FIFA 2025", "Latest soccer simulation", "EA Sports", "PC/Console", 59.99f,
-                            new java.util.Date());
-                    gameManagement.addGame(game2);
-
-                    Game game3 = new Game("Call of Duty: Modern Warfare", "FPS action game", "Activision", "PC/Console",
-                            49.99f, new java.util.Date());
-                    gameManagement.addGame(game3);
-
-                    Game game4 = new Game("The Legend of Zelda", "Action-adventure game", "Nintendo", "Switch", 59.99f,
-                            new java.util.Date());
-                    gameManagement.addGame(game4);
-
-                    Game game5 = new Game("Among Us", "Social deduction game", "InnerSloth", "PC/Mobile", 4.99f,
-                            new java.util.Date());
-                    gameManagement.addGame(game5);
-
-                    System.out.println("Added default games to the database");
-                } catch (Exception e) {
-                    System.out.println("Error adding default games: " + e.getMessage());
-                }
-
-                System.out.println("Predefined data initialized.");
-            } else {
-                System.out.println("Skipping data initialization as data already exists in the database.");
-            }
-        } catch (Exception e) {
-            System.err.println("Error during data initialization check: " + e.getMessage());
-            e.printStackTrace();
-        }
-
+        // Create and show the frame - no database connection attempt here
         SwingUtilities.invokeLater(() -> {
-            new GameVaultFrame(vaultManager, userManagement, gameManagement, cartManagement, orderManagement,
-                    transactionManagement).setVisible(true);
+            GameVaultFrame frame = new GameVaultFrame(vaultManager, userManagement, gameManagement, cartManagement,
+                    orderManagement, transactionManagement);
+            frame.setVisible(true);
+
+            // Start with the database connection panel
+            frame.showPanel("DatabaseConnection");
         });
     }
 }

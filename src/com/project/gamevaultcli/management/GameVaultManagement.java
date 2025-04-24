@@ -17,7 +17,8 @@ public class GameVaultManagement {
     private final TransactionManagement transactionManagement;
     private User currentUser = null;
 
-    public GameVaultManagement(UserManagement userManagement, GameManagement gameManagement, OrderManagement orderManagement, TransactionManagement transactionManagement) {
+    public GameVaultManagement(UserManagement userManagement, GameManagement gameManagement,
+            OrderManagement orderManagement, TransactionManagement transactionManagement) {
         this.userManagement = userManagement;
         this.gameManagement = gameManagement;
         this.orderManagement = orderManagement;
@@ -31,21 +32,28 @@ public class GameVaultManagement {
             userManagement.addUser(user1);
             User user2 = new User("naruto@gmail.com", "believeit", "Naruto", 100.0f);
             userManagement.addUser(user2);
+            // Add the default user shown in the login panel
+            User user3 = new User("user@user.com", "1234", "DefaultUser", 200.0f);
+            userManagement.addUser(user3);
 
             // Predefined Games
-            Game game1 = new Game("Spider-Man Remastered", "Game created ?? lol lorem ipsum or wot", "Insomniac Games", "PC", 52.3f, new Date());
+            Game game1 = new Game("Spider-Man Remastered", "Game created ?? lol lorem ipsum or wot", "Insomniac Games",
+                    "PC", 52.3f, new Date());
             gameManagement.addGame(game1);
             Game game2 = new Game("God of War", "A great game", "Santa Monica Studio", "PS4", 49.99f, new Date());
             gameManagement.addGame(game2);
-            Game game3 = new Game("The Last of Us Part II", "A controversial masterpiece", "Naughty Dog", "PS4", 59.99f, new Date());
+            Game game3 = new Game("The Last of Us Part II", "A controversial masterpiece", "Naughty Dog", "PS4", 59.99f,
+                    new Date());
             gameManagement.addGame(game3);
-            Game game4 = new Game("Cyberpunk 2077", "A buggy mess... or is it?", "CD Projekt Red", "PC", 39.99f, new Date());
+            Game game4 = new Game("Cyberpunk 2077", "A buggy mess... or is it?", "CD Projekt Red", "PC", 39.99f,
+                    new Date());
             gameManagement.addGame(game4);
 
             // Predefined Orders - will need to manually create cart and place order
             // Predefined Transactions
-            //Transaction transaction1 = new Transaction(1, user1.getUserId(), game1.getGameId(), "Purchase", 52.3f, LocalDateTime.now());
-            //transactionManagement.addTransaction(transaction1);
+            // Transaction transaction1 = new Transaction(1, user1.getUserId(),
+            // game1.getGameId(), "Purchase", 52.3f, LocalDateTime.now());
+            // transactionManagement.addTransaction(transaction1);
 
         } catch (InvalidUserDataException e) {
             System.out.println("Error initializing data: " + e.getMessage());
