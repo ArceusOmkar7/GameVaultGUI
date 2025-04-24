@@ -1,7 +1,6 @@
 package com.project.gamevaultcli;
 
 import com.project.gamevaultcli.management.GameVaultManagement;
-import com.project.gamevaultcli.management.GameVaultMenu;
 import com.project.gamevaultcli.management.CartManagement;
 import com.project.gamevaultcli.management.GameManagement;
 import com.project.gamevaultcli.management.OrderManagement;
@@ -12,15 +11,17 @@ import com.project.gamevaultcli.storage.GameStorage;
 import com.project.gamevaultcli.storage.OrderStorage;
 import com.project.gamevaultcli.storage.TransactionStorage;
 import com.project.gamevaultcli.storage.UserStorage;
-import com.project.gamevaultcli.helpers.DBUtil; // Import DBUtil
+import com.project.gamevaultcli.helpers.DBUtil;
+import com.project.gamevaultgui.GameVaultFrame;
 import java.io.IOException;
 import java.sql.SQLException;
+import javax.swing.SwingUtilities;
 
 public class GameVaultCLI {
 
     public static void main(String[] args) {
         try {
-            // Initialize Storages
+            // Initialize Storages (but don't connect to DB yet)
             UserStorage userStorage = new UserStorage();
             GameStorage gameStorage = new GameStorage();
             CartStorage cartStorage = new CartStorage(gameStorage);
@@ -32,19 +33,32 @@ public class GameVaultCLI {
             GameManagement gameManagement = new GameManagement(gameStorage);
             CartManagement cartManagement = new CartManagement(cartStorage);
             TransactionManagement transactionManagement = new TransactionManagement(transactionStorage);
-            OrderManagement orderManagement = new OrderManagement(orderStorage, cartStorage, userStorage, transactionManagement); // Modified
+            OrderManagement orderManagement = new OrderManagement(orderStorage, cartStorage, userStorage,
+                    transactionManagement);
 
-            // Initialize and load predefined data using the GameVaultManager
-            GameVaultManagement vaultManager = new GameVaultManagement(userManagement, gameManagement, orderManagement, transactionManagement);
-            vaultManager.initializeData();
+            // Create GameVaultManagement but DO NOT initialize data yet (which would
+            // trigger DB connection)
+            GameVaultManagement vaultManager = new GameVaultManagement(userManagement, gameManagement, orderManagement,
+                    transactionManagement);
 
-            // Create and run the menu
-            GameVaultMenu menu = new GameVaultMenu(userManagement, gameManagement, cartManagement, orderManagement, transactionManagement, vaultManager);
-            menu.run();
+            // Launch the GUI first, which will handle the database connection through its
+            // connection panel
+            SwingUtilities.invokeLater(() -> {
+                GameVaultFrame frame = new GameVaultFrame(
+                        vaultManager,
+                        userManagement,
+                        gameManagement,
+                        cartManagement,
+                        orderManagement,
+                        transactionManagement);
+                frame.setVisible(true);
+
+                // Start with the database connection panel
+                frame.showPanel("DatabaseConnection");
+            });
 
         } finally {
-            // Ensure database connection is closed when the application exits
-            DBUtil.closeConnection();
+            // Connection closing is now handled by the GUI
         }
     }
 }
