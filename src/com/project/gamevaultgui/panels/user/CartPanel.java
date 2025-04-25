@@ -207,8 +207,11 @@ public class CartPanel extends JPanel {
                 // After a successful order, refresh the cart display (which will be empty)
                 loadCart(currentUser.getUserId());
 
-                // !!! Crucial: Refresh the user's balance and potentially other UI elements !!!
-                parentFrame.refreshCurrentUserAndUI(); // Call the new method in GameVaultFrame
+                // Refresh the user's balance, owned games and UI elements
+                parentFrame.refreshCurrentUserAndUI();
+
+                // Refresh dashboard to update available games list (removing purchased games)
+                parentFrame.refreshGameData();
 
                 // Optional: Automatically navigate to the billing page after checkout
                 // parentFrame.showPanel("Billing");

@@ -23,6 +23,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -297,11 +298,31 @@ public class DashboardPanel extends JPanel {
             List<User> users = userManagement.getAllUsers();
             userCountLabel.setText("Total Users: " + users.size());
 
-            // Load all games and display in the games table
-            List<Game> games = gameManagement.getAllGames();
-            gameCountLabel.setText("Total Games: " + games.size());
+            // Get owned games first (if a user is logged in)
+            List<Game> ownedGames = new ArrayList<>();
+            if (currentUserId != -1) {
+                ownedGames = gameManagement.getOwnedGames(currentUserId);
+            }
+
+            // Load all games and display in the games table (filtering out owned ones for
+            // users)
+            List<Game> allGames = gameManagement.getAllGames();
+            gameCountLabel.setText("Total Games: " + allGames.size());
             gamesTableModel.setRowCount(0);
-            for (Game game : games) {
+
+            for (Game game : allGames) {
+                // Skip games the user already owns (only for logged-in users)
+                if (currentUserId != -1) {
+                    // Check if this game is in the owned games list
+                    boolean isOwned = ownedGames.stream()
+                            .anyMatch(ownedGame -> ownedGame.getGameId() == game.getGameId());
+
+                    if (isOwned) {
+                        continue; // Skip this game, the user already owns it
+                    }
+                }
+
+                // Add the game to the available games table
                 String releaseDateStr = (game.getReleaseDate() != null)
                         ? new SimpleDateFormat("yyyy-MM-dd").format(game.getReleaseDate())
                         : "N/A";
@@ -318,7 +339,6 @@ public class DashboardPanel extends JPanel {
             // Load owned games if a user is logged in
             ownedGamesTableModel.setRowCount(0);
             if (currentUserId != -1) {
-                List<Game> ownedGames = gameManagement.getOwnedGames(currentUserId);
                 for (Game game : ownedGames) {
                     ownedGamesTableModel.addRow(new Object[] {
                             game.getGameId(),
@@ -334,6 +354,8 @@ public class DashboardPanel extends JPanel {
                 ownedGamesScrollPane.setVisible(false);
             }
 
+            // Rest of the method (load total revenue, orders, transactions) remains
+            // unchanged
             // Load total revenue
             List<Transaction> transactions = transactionManagement.getAllTransactions();
             double totalRevenue = transactions.stream()
