@@ -87,12 +87,18 @@ public class OrderManagement {
             List<Order> orders = orderStorage.findAll();
             order = orders.get(orders.size() - 1);
 
-            // 3. Create a transaction for the order
+            // 3. Create OrderItems records for each game in the cart
+            for (Game game : games) {
+                String sqlInsertOrderItem = "INSERT INTO OrderItems (orderId, gameId, price) VALUES (?, ?, ?)";
+                DBUtil.executeUpdate(sqlInsertOrderItem, order.getOrderId(), game.getGameId(), game.getPrice());
+            }
+
+            // 4. Create a transaction for the order
             Transaction transaction = new Transaction(null, order.getOrderId(), userId, "Purchase", (float) totalAmount,
                     LocalDateTime.now());
             transactionManagement.addTransaction(transaction);
 
-            // 4. Clear the cart after placing the order
+            // 5. Clear the cart after placing the order
             cartStorage.clearCart(userId);
 
         } catch (SQLException | IOException e) {

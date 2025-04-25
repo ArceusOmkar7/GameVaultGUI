@@ -38,14 +38,17 @@ public class GameStorage implements StorageInterface<Game, Integer> {
 
     // Find all games owned by a specific user from completed orders
     public List<Game> findOwnedGamesByUser(Integer userId) {
+        // Use OrderItems table to find games that have been purchased by this user
         String sql = "SELECT DISTINCT g.* FROM Games g " +
-                "JOIN Transactions t ON g.gameId = t.orderId " +
-                "WHERE t.userId = ? AND t.transactionType = 'Purchase'";
+                "JOIN OrderItems oi ON g.gameId = oi.gameId " +
+                "JOIN Orders o ON oi.orderId = o.orderId " +
+                "WHERE o.userId = ?";
+
         try {
             return DBUtil.executeQuery(sql, rs -> mapResultSetToGame(rs), userId);
         } catch (SQLException | IOException e) {
             System.err.println("Error finding owned games for user: " + e.getMessage());
-            e.printStackTrace(); // Add stack trace for better debugging
+            e.printStackTrace();
             return new ArrayList<>();
         }
     }

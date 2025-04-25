@@ -129,8 +129,9 @@ public class DBUtil {
             statement.executeUpdate(SQL_CREATE_USERS_TABLE);
             statement.executeUpdate(SQL_CREATE_GAMES_TABLE);
             statement.executeUpdate(SQL_CREATE_CARTS_TABLE);
-            statement.executeUpdate(SQL_CREATE_CART_ITEMS_TABLE); // Added this
+            statement.executeUpdate(SQL_CREATE_CART_ITEMS_TABLE);
             statement.executeUpdate(SQL_CREATE_ORDERS_TABLE);
+            statement.executeUpdate(SQL_CREATE_ORDER_ITEMS_TABLE);
             statement.executeUpdate(SQL_CREATE_TRANSACTIONS_TABLE);
             // System.out.println("Tables created or already exist."); remove
         }
@@ -206,14 +207,13 @@ public class DBUtil {
             "FOREIGN KEY (userId) REFERENCES Users(userId)" +
             ")";
 
-    private static final String SQL_CREATE_CART_ITEMS_TABLE = // Added this
-            "CREATE TABLE IF NOT EXISTS CartItems (" +
-                    "cartItemId INT AUTO_INCREMENT PRIMARY KEY," +
-                    "userId INT NOT NULL," +
-                    "gameId INT NOT NULL," +
-                    "FOREIGN KEY (userId) REFERENCES Carts(userId)," +
-                    "FOREIGN KEY (gameId) REFERENCES Games(gameId)" +
-                    ")";
+    private static final String SQL_CREATE_CART_ITEMS_TABLE = "CREATE TABLE IF NOT EXISTS CartItems (" +
+            "cartItemId INT AUTO_INCREMENT PRIMARY KEY," +
+            "userId INT NOT NULL," +
+            "gameId INT NOT NULL," +
+            "FOREIGN KEY (userId) REFERENCES Carts(userId)," +
+            "FOREIGN KEY (gameId) REFERENCES Games(gameId)" +
+            ")";
 
     private static final String SQL_CREATE_ORDERS_TABLE = "CREATE TABLE IF NOT EXISTS Orders (" +
             "orderId INT AUTO_INCREMENT PRIMARY KEY," +
@@ -223,9 +223,18 @@ public class DBUtil {
             "FOREIGN KEY (userId) REFERENCES Users(userId)" +
             ")";
 
+    private static final String SQL_CREATE_ORDER_ITEMS_TABLE = "CREATE TABLE IF NOT EXISTS OrderItems (" +
+            "orderItemId INT AUTO_INCREMENT PRIMARY KEY," +
+            "orderId INT NOT NULL," +
+            "gameId INT NOT NULL," +
+            "price FLOAT NOT NULL," +
+            "FOREIGN KEY (orderId) REFERENCES Orders(orderId)," +
+            "FOREIGN KEY (gameId) REFERENCES Games(gameId)" +
+            ")";
+
     private static final String SQL_CREATE_TRANSACTIONS_TABLE = "CREATE TABLE IF NOT EXISTS Transactions (" +
             "transactionId INT AUTO_INCREMENT PRIMARY KEY," +
-            "orderId INT NOT NULL," + // Changed this
+            "orderId INT NOT NULL," +
             "userId INT NOT NULL," +
             "transactionType VARCHAR(255)," +
             "amount FLOAT NOT NULL," +
