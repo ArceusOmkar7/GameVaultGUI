@@ -105,7 +105,7 @@ The project consists of a core backend logic layer, a Command-Line Interface (CL
 2.  **Clone the repository:** (If applicable)
     ```bash
     git clone <repository_url>
-    cd GameVaultCLI_DB # Or your project directory name
+    cd GameVaultGUI
     ```
 
 3.  **Add MySQL JDBC Connector:**
@@ -177,6 +177,6 @@ The project can be built and run using Apache Ant, as configured by NetBeans pro
 
 ## Author
 
-*   Omkar (Based on the project files)
+*   Omkar
 
 ---
